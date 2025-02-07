@@ -39,3 +39,21 @@ class ChangeToDoCompleted extends TodoEvent {
   @override
   List<Object?> get props => [id, isCompleted];
 }
+
+class UpdateToDoEvent extends TodoEvent {
+  const UpdateToDoEvent({required this.todoEntity});
+
+  final TodoEntity todoEntity;
+
+  @override
+  List<Object?> get props => [todoEntity];
+}
+
+class DeleteToDoEvent extends TodoEvent {
+  const DeleteToDoEvent({required this.id});
+
+  final String id;
+
+  @override
+  List<Object?> get props => [id];
+}

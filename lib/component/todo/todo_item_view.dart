@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/entity/todo_entity.dart';
+import 'package:like_todo/utils/database_helper.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../bloc/todo/todo_bloc.dart';
+import '../../page/todo/create_todo_page.dart';
 
 class TodoItemView extends StatelessWidget {
   const TodoItemView(
@@ -68,12 +70,31 @@ class TodoItemView extends StatelessWidget {
               ],
             ),
           ),
-          right: TDSwipeCellPanel(children: [
-            const TDSwipeCellAction(
-              backgroundColor: Colors.redAccent,
-              label: "删除",
-            )
-          ]),
+          right: TDSwipeCellPanel(
+            extentRatio: 0.6,
+            children: [
+              const TDSwipeCellAction(
+                backgroundColor: Colors.indigo,
+                label: "详情",
+              ),
+              TDSwipeCellAction(
+                backgroundColor: Colors.blueAccent,
+                label: "编辑",
+                onPressed: (context) {
+                  _handleEditTodo(todoEntity);
+                },
+              ),
+              TDSwipeCellAction(
+                backgroundColor: Colors.redAccent,
+                label: "删除",
+                autoClose: false,
+                onPressed: (context) {
+                  _showDeleteCheckDialog(todoEntity.id);
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -88,5 +109,38 @@ class TodoItemView extends StatelessWidget {
     final bloc = BlocProvider.of<TodoBloc>(context);
     bloc.add(ChangeToDoCompleted(
         id: todoEntity.id, isCompleted: !todoEntity.isCompleted));
+  }
+
+  void _showDeleteCheckDialog(String todoId) {
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (BuildContext buildContext, Animation<double> animation,
+          Animation<double> secondaryAnimation) {
+        return TDAlertDialog(
+          content: '你确认要删除这个ToDo吗？',
+          rightBtnAction: () {
+            _handleDeleteTodo(todoId);
+          },
+        );
+      },
+    );
+  }
+
+  void _handleEditTodo(TodoEntity todoEntity) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTodoPage(
+          todoEntity: todoEntity,
+          context: this.context,
+        ),
+      ),
+    );
+  }
+
+  void _handleDeleteTodo(String todoId) {
+    DatabaseHelper().deleteTodoEntity(todoId);
+    final bloc = BlocProvider.of<TodoBloc>(context);
+    bloc.add(DeleteToDoEvent(id: todoId));
   }
 }

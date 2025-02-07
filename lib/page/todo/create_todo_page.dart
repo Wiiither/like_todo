@@ -49,6 +49,8 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         child: Column(
           children: [
             CreateTodoContentView(
+              defaultTitle: widget.todoEntity.title,
+              defaultContent: widget.todoEntity.mark,
               titleEditComplete: (title) {
                 print("修改 ToDo 标题 $title");
                 widget.todoEntity.title = title;
@@ -172,10 +174,16 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
       return;
     }
     final bloc = BlocProvider.of<TodoBloc>(widget.context);
-    todoEntity.id = _generateTodoId();
-    bloc.add(AddNewToDoEvent(todoEntity: todoEntity));
-    await DatabaseHelper().insertTodoEntity(todoEntity);
-    TDToast.showText('创建成功', context: context);
+    if (todoEntity.id == newToDoID) {
+      todoEntity.id = _generateTodoId();
+      bloc.add(AddNewToDoEvent(todoEntity: todoEntity));
+      await DatabaseHelper().insertTodoEntity(todoEntity);
+      TDToast.showText('创建成功', context: context);
+    } else {
+      bloc.add(UpdateToDoEvent(todoEntity: todoEntity));
+      await DatabaseHelper().updateTodoEntity(todoEntity);
+      TDToast.showText('修改成功', context: context);
+    }
     Navigator.pop(context);
   }
 

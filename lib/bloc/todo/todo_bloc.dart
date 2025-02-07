@@ -13,6 +13,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<AddNewToDoArrayEvent>(_addTodoArray);
     on<ChangeToDoCompleted>(_changeTodoCompleted);
     on<LoadToDoFromDatabaseEvent>(_loadDataFromDatabase);
+    on<UpdateToDoEvent>(_updateTodoEntity);
+    on<DeleteToDoEvent>(_deleteTodoEntity);
   }
 
   void _addNewTodo(AddNewToDoEvent event, Emitter<TodoState> emit) {
@@ -46,6 +48,28 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       LoadToDoFromDatabaseEvent event, Emitter<TodoState> emit) async {
     final todoList = await DatabaseHelper().getTodoEntities();
     print("从数据获取的 $todoList");
+    emit(state.copyWith(todoList: todoList));
+  }
+
+  void _updateTodoEntity(UpdateToDoEvent event, Emitter<TodoState> emit) async {
+    List<TodoEntity> todoList = state.todoList;
+    int index = 0;
+    for (TodoEntity item in todoList) {
+      if (item.id == event.todoEntity.id) {
+        todoList[index] = event.todoEntity;
+        break;
+      }
+      index++;
+    }
+    emit(state.copyWith(
+      todoList: todoList,
+      lastChangeTime: DateTime.now().millisecondsSinceEpoch,
+    ));
+  }
+
+  void _deleteTodoEntity(DeleteToDoEvent event, Emitter<TodoState> emit) async {
+    List<TodoEntity> todoList = List.from(state.todoList);
+    todoList.removeWhere((item) => item.id == event.id);
     emit(state.copyWith(todoList: todoList));
   }
 }

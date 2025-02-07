@@ -4,12 +4,21 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 typedef StringCallBack = Function(String);
 
 class CreateTodoContentView extends StatelessWidget {
-  const CreateTodoContentView({
+  CreateTodoContentView({
     super.key,
+    this.defaultTitle,
+    this.defaultContent,
     this.titleEditComplete,
     this.contentEditComplete,
-  });
+  }) {
+    titleController.text = defaultTitle ?? '';
+    contentController.text = defaultContent ?? '';
+  }
 
+  final String? defaultTitle;
+  final String? defaultContent;
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController contentController = TextEditingController();
   final StringCallBack? titleEditComplete;
   final StringCallBack? contentEditComplete;
 
@@ -42,6 +51,8 @@ class CreateTodoContentView extends StatelessWidget {
         fontWeight: FontWeight.w600,
       ),
       showBottomDivider: false,
+      needClear: false,
+      controller: titleController,
       onChanged: (content) {
         titleEditComplete?.call(content);
       },
@@ -54,6 +65,8 @@ class CreateTodoContentView extends StatelessWidget {
       maxLines: 6,
       hintText: "备注",
       showBottomDivider: false,
+      needClear: false,
+      controller: contentController,
       onChanged: (content) {
         contentEditComplete?.call(content);
       },
