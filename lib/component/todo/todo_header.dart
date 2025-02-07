@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/entity/todo_entity.dart';
+import 'package:like_todo/entity/todo_repeat_type.dart';
 import 'package:like_todo/page/todo/create_todo_page.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -45,7 +46,10 @@ class TodoHeader extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => CreateTodoPage(
-                  todoEntity: TodoEntity(id: newToDoID),
+                  todoEntity: TodoEntity(
+                    id: newToDoID,
+                    repeatType: TodoRepeatType.defaultRepeatType[0],
+                  ),
                   context: this.context,
                 ),
               ),

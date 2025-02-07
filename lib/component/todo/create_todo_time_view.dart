@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
+enum SelectedTimeType { day, hour }
+
 class CreateTodoTimeView extends StatelessWidget {
   const CreateTodoTimeView({
     super.key,
     required this.title,
     required this.content,
     this.dateTime,
+    required this.timeType,
     this.onSelectedDateTime,
   });
 
   final String title;
   final String content;
   final DateTime? dateTime;
+  final SelectedTimeType timeType;
   final Function(DateTime)? onSelectedDateTime;
 
   @override
@@ -24,34 +28,63 @@ class CreateTodoTimeView extends StatelessWidget {
           title: title,
           onConfirm: (selected) {
             if (onSelectedDateTime != null) {
+              print("selected $selected");
               int year = selected["year"] ?? 2025;
               int month = selected["month"] ?? 1;
               int day = selected["day"] ?? 1;
               int hour = selected["hour"] ?? 12;
               int minute = selected["minute"] ?? 0;
-              DateTime newDatetime = DateTime(year, month, day, hour, minute);
+              DateTime newDatetime =
+                  DateTime(year, month, day + 1, hour, minute);
               onSelectedDateTime!.call(newDatetime);
             }
             Navigator.of(context).pop();
           },
-          useHour: true,
-          useMinute: true,
+          useYear: timeType == SelectedTimeType.day,
+          useMonth: timeType == SelectedTimeType.day,
+          useDay: timeType == SelectedTimeType.day,
+          useHour: timeType == SelectedTimeType.hour,
+          useMinute: timeType == SelectedTimeType.hour,
           pickerHeight: 250,
-          dateStart: [
-            DateTime.now().year,
-            DateTime.now().month,
-            DateTime.now().day,
-          ],
-          dateEnd: [
-            DateTime.now().year + 1,
-            DateTime.now().month,
-            DateTime.now().day,
-          ],
-          initialDate: [
-            DateTime.now().year,
-            DateTime.now().month,
-            DateTime.now().day,
-          ],
+          dateStart: timeType == SelectedTimeType.day
+              ? [
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                ]
+              : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                ],
+          dateEnd: timeType == SelectedTimeType.day
+              ? [
+                  DateTime.now().year + 1,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                ]
+              : [
+                  0,
+                  0,
+                  0,
+                  23,
+                  59,
+                ],
+          initialDate: timeType == SelectedTimeType.day
+              ? [
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                ]
+              : [
+                  0,
+                  0,
+                  0,
+                  DateTime.now().hour,
+                  DateTime.now().minute,
+                ],
         );
       },
       child: Container(

@@ -1,3 +1,4 @@
+import 'package:like_todo/entity/todo_repeat_type.dart';
 import 'package:like_todo/entity/todo_tag_entity.dart';
 
 enum TodoEntityType { main, sub }
@@ -11,9 +12,10 @@ class TodoEntity {
     this.mark = "",
     this.isCompleted = false,
     this.type = TodoEntityType.main,
+    this.date,
     this.startTime,
     this.endTime,
-    this.isRepeat = false,
+    required this.repeatType,
     this.tags = const [],
   });
 
@@ -31,14 +33,17 @@ class TodoEntity {
   //  类型
   TodoEntityType type;
 
+  //  日期
+  DateTime? date;
+
   //  开始时间
   DateTime? startTime;
 
   //  结束时间
   DateTime? endTime;
 
-  //  是否重复
-  bool isRepeat;
+  //  类型重复
+  TodoRepeatType repeatType;
 
   //  标签
   List<TodoTagEntity> tags;

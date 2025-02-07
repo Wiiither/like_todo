@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/bloc/todo/todo_bloc.dart';
 import 'package:like_todo/entity/todo_entity.dart';
+import 'package:like_todo/entity/todo_repeat_type.dart';
 import 'package:like_todo/page/todo/todo_tag_select_page.dart';
 import 'package:like_todo/utils/database_helper.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../base/custom_color.dart';
 import '../../component/todo/create_todo_content_view.dart';
-import '../../component/todo/create_todo_switch_view.dart';
+import '../../component/todo/create_todo_select_view.dart';
 import '../../component/todo/create_todo_tag_view.dart';
 import '../../component/todo/create_todo_time_view.dart';
 
@@ -36,6 +37,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime? date = widget.todoEntity.date;
     DateTime? startTime = widget.todoEntity.startTime;
     DateTime? endTime = widget.todoEntity.endTime;
 
@@ -57,8 +59,24 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
               },
             ),
             CreateTodoTimeView(
+              title: '日期',
+              content: date != null
+                  ? _dateTimeToString(date, SelectedTimeType.day)
+                  : '请选择',
+              timeType: SelectedTimeType.day,
+              onSelectedDateTime: (dateTime) {
+                print("日期 ${dateTime}");
+                setState(() {
+                  widget.todoEntity.date = dateTime;
+                });
+              },
+            ),
+            CreateTodoTimeView(
               title: '开始时间',
-              content: startTime != null ? _dateTimeToString(startTime) : '请选择',
+              content: startTime != null
+                  ? _dateTimeToString(startTime, SelectedTimeType.hour)
+                  : '请选择',
+              timeType: SelectedTimeType.hour,
               onSelectedDateTime: (dateTime) {
                 print("新的开始时间 ${dateTime}");
                 setState(() {
@@ -68,7 +86,10 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
             ),
             CreateTodoTimeView(
               title: '结束时间',
-              content: endTime != null ? _dateTimeToString(endTime) : '请选择',
+              content: endTime != null
+                  ? _dateTimeToString(endTime, SelectedTimeType.hour)
+                  : '请选择',
+              timeType: SelectedTimeType.hour,
               onSelectedDateTime: (dateTime) {
                 print("新的结束时间 ${dateTime}");
                 setState(() {
@@ -76,12 +97,14 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
                 });
               },
             ),
-            CreateTodoSwitchView(
-              title: '重复',
-              isActive: widget.todoEntity.isRepeat,
-              onTap: () {
+            CreateTodoSelectView<TodoRepeatType>(
+              title: '重复周期',
+              dataSource: TodoRepeatType.defaultRepeatType,
+              defaultValue: widget.todoEntity.repeatType,
+              onSelectedCallback: (repeatType) {
                 setState(() {
-                  widget.todoEntity.isRepeat = !widget.todoEntity.isRepeat;
+                  print("更新 repeat Type $repeatType");
+                  widget.todoEntity.repeatType = repeatType;
                 });
               },
             ),
@@ -123,8 +146,12 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     );
   }
 
-  String _dateTimeToString(DateTime dateTime) {
-    return "${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}";
+  String _dateTimeToString(DateTime dateTime, SelectedTimeType timeType) {
+    if (timeType == SelectedTimeType.day) {
+      return "${"${dateTime.year}".padLeft(4, '0')}/${"${dateTime.month}".padLeft(2, '0')}/${"${dateTime.day}".padLeft(2, '0')}";
+    } else {
+      return "${"${dateTime.hour}".padLeft(2, '0')}:${"${dateTime.minute}".padLeft(2, '0')}";
+    }
   }
 
   //  处理保存
