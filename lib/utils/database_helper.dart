@@ -24,14 +24,15 @@ class DatabaseHelper {
     return await openDatabase(path, version: 3, onCreate: (db, version) async {
       await db.execute('''
        CREATE TABLE todo_entity(
-            id TEXT PRIMARY KEY,
+             id TEXT PRIMARY KEY,
             title TEXT,
             mark TEXT,
             isCompleted INTEGER,
             type TEXT,
+            date TEXT,
             startTime TEXT,
             endTime TEXT,
-            isRepeat INTEGER,
+            repeatType TEXT,
             tags TEXT
        )
       ''');

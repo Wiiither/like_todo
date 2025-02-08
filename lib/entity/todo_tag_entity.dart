@@ -33,13 +33,27 @@ class TodoTagEntity {
 
   @override
   String toString() {
-    return '$type:$name';
+    return '${typeToString(type)}:$name';
   }
 
   static TodoTagEntity fromString(String str) {
     final parts = str.split(':');
     return TodoTagEntity(
-        name: parts[1], type: TodoTagEntityType.values[int.parse(parts[0])]);
+        name: parts[1], type: stringToTodoTagEntityType(parts[0]));
+  }
+
+  // 将 TodoTagEntityType 转换为字符串
+  String typeToString(TodoTagEntityType type) {
+    return type.toString().split('.').last; // 获取 enum 的名称
+  }
+
+// 从字符串转换为 TodoTagEntityType
+  static TodoTagEntityType stringToTodoTagEntityType(String typeString) {
+    return TodoTagEntityType.values.firstWhere(
+      (e) => e.toString().split('.').last == typeString,
+      orElse: () =>
+          throw ArgumentError('Invalid TodoTagEntityType: $typeString'),
+    );
   }
 }
 
