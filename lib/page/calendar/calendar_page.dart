@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/base/time_utils.dart';
 import 'package:like_todo/component/calendar/timeline_item_view.dart';
 import 'package:like_todo/entity/timeline_item_entity.dart';
@@ -10,9 +11,9 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 import '../../bloc/todo/todo_bloc.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({super.key, required this.context});
-
-  final BuildContext context;
+  const CalendarPage({
+    super.key,
+  });
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
@@ -24,6 +25,9 @@ class _CalendarPageState extends State<CalendarPage> {
     return Scaffold(
       appBar: TDNavBar(
         title: '时间轴',
+        titleColor: CustomColor.mainColor,
+        titleFont: Font(size: 20, lineHeight: 22),
+        titleFontWeight: FontWeight.w600,
         centerTitle: false,
         useDefaultBack: false,
       ),
@@ -52,7 +56,7 @@ class _CalendarPageState extends State<CalendarPage> {
   List<TimelineItemEntity> _convertToTimelineItem(List<TodoEntity> todoList) {
     List<TimelineItemEntity> result = [];
     List<DateTime> todoDateTimes = todoList.map((entity) {
-      return entity.date!;
+      return DateTime.now();
     }).toList();
     final years = todoDateTimes.getUniqueYears();
 
@@ -80,9 +84,7 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
           );
           List<TodoEntity> dayTodoList = todoList.where((entity) {
-            return entity.date!.year == year &&
-                entity.date!.month == month &&
-                entity.date!.day == day;
+            return true;
           }).toList();
           for (TodoEntity todoEntity in dayTodoList) {
             result.add(

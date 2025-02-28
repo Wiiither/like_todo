@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:like_todo/entity/todo_group_entity.dart';
 import 'package:like_todo/utils/database_helper.dart';
 
 import '../../entity/todo_entity.dart';
@@ -8,68 +9,110 @@ part 'todo_event.dart';
 part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
-  TodoBloc() : super(const TodoState(todoList: [], lastChangeTime: 0)) {
-    on<AddNewToDoEvent>(_addNewTodo);
-    on<AddNewToDoArrayEvent>(_addTodoArray);
-    on<ChangeToDoCompleted>(_changeTodoCompleted);
-    on<LoadToDoFromDatabaseEvent>(_loadDataFromDatabase);
-    on<UpdateToDoEvent>(_updateTodoEntity);
-    on<DeleteToDoEvent>(_deleteTodoEntity);
+  TodoBloc()
+      : super(
+          TodoState(
+            todoList: [],
+            todoGroupList: [],
+            groupTodoMap: {},
+            lastUpdateDatetime: DateTime.now(),
+          ),
+        ) {
+    on<ReloadTodoGroupEvent>(_reloadTodoGroup);
+    on<ReloadAllTodoEvent>(_reloadAllTodo);
+    on<AddNewTodoEvent>(_addNewTodo);
+    on<GetTodoByGroupEvent>(_getTodoByGroup);
+    on<GetAllGroupTodoEvent>(_getAllGroupTodo);
+    on<UpdateTodoEvent>(_updateTodo);
+    on<DeleteTodoEvent>(_deleteTodo);
   }
 
-  void _addNewTodo(AddNewToDoEvent event, Emitter<TodoState> emit) {
-    List<TodoEntity> todoList = List.from(state.todoList);
-    todoList.add(event.todoEntity);
-    emit(state.copyWith(todoList: todoList));
+  final DataBaseHelper _dataBaseHelper = DataBaseHelper();
+
+  void _reloadTodoGroup(
+      ReloadTodoGroupEvent event, Emitter<TodoState> emit) async {
+    List<TodoGroupEntity> todoGroups = await _dataBaseHelper.getTodoGroups();
+    emit(state.copyWith(todoGroupList: todoGroups));
   }
 
-  void _addTodoArray(AddNewToDoArrayEvent event, Emitter<TodoState> emit) {
-    List<TodoEntity> todoList = List.from(state.todoList);
-    todoList.addAll(event.todoEntityArray);
-    emit(state.copyWith(todoList: todoList));
+  void _reloadAllTodo(ReloadAllTodoEvent event, Emitter<TodoState> emit) async {
+    List<TodoEntity> todos = await _dataBaseHelper.getTodos();
+    emit(state.copyWith(todoList: todos));
   }
 
-  void _changeTodoCompleted(
-      ChangeToDoCompleted event, Emitter<TodoState> emit) {
+  void _addNewTodo(AddNewTodoEvent event, Emitter<TodoState> emit) async {
+    await _dataBaseHelper.insertTodo(event.todoEntity);
+    await _dataBaseHelper.insertTodoGroupMapping(
+      event.todoEntity.id,
+      event.groupEntity.groupID,
+    );
+    add(GetTodoByGroupEvent(groupID: event.groupEntity.groupID));
+    add(ReloadAllTodoEvent());
+  }
+
+  void _getTodoByGroup(
+      GetTodoByGroupEvent event, Emitter<TodoState> emit) async {
+    List<TodoEntity> todos =
+        await _dataBaseHelper.getTodosByGroup(event.groupID);
+    Map<String, List<TodoEntity>> groupTodoMap = Map.from(state.groupTodoMap);
+    groupTodoMap[event.groupID] = todos;
+    emit(state.copyWith(groupTodoMap: groupTodoMap));
+  }
+
+  void _getAllGroupTodo(
+      GetAllGroupTodoEvent event, Emitter<TodoState> emit) async {
+    Map<String, List<TodoEntity>> groupTodoMap =
+        await _dataBaseHelper.getAllGroupTodos();
+    emit(state.copyWith(groupTodoMap: groupTodoMap));
+  }
+
+  void _updateTodo(UpdateTodoEvent event, Emitter<TodoState> emit) async {
+    await _dataBaseHelper.updateTodo(event.todoEntity);
     final todoList = state.todoList;
-    for (TodoEntity item in todoList) {
-      if (item.id == event.id) {
-        item.isCompleted = event.isCompleted;
-        print("更新 ToDo id ${item.id}");
+    todoList.removeWhere((item) => item.id == event.todoEntity.id);
+    todoList.add(event.todoEntity);
+
+    final groupTodoMap = state.groupTodoMap;
+    Set<String> updateKey = {};
+    groupTodoMap.forEach((key, value) {
+      for (TodoEntity item in value) {
+        if (item.id == event.todoEntity.id) {
+          updateKey.add(key);
+        }
       }
+    });
+    for (String key in updateKey) {
+      groupTodoMap[key]?.removeWhere((item) => item.id == event.todoEntity.id);
+      groupTodoMap[key]?.add(event.todoEntity);
     }
     emit(state.copyWith(
       todoList: todoList,
-      lastChangeTime: DateTime.now().millisecondsSinceEpoch,
+      groupTodoMap: groupTodoMap,
+      lastUpdateDatetime: DateTime.now(),
     ));
   }
 
-  void _loadDataFromDatabase(
-      LoadToDoFromDatabaseEvent event, Emitter<TodoState> emit) async {
-    final todoList = await DatabaseHelper().getTodoEntities();
-    print("从数据获取的 $todoList");
-    emit(state.copyWith(todoList: todoList));
-  }
-
-  void _updateTodoEntity(UpdateToDoEvent event, Emitter<TodoState> emit) async {
-    List<TodoEntity> todoList = state.todoList;
-    int index = 0;
-    for (TodoEntity item in todoList) {
-      if (item.id == event.todoEntity.id) {
-        todoList[index] = event.todoEntity;
-        break;
+  void _deleteTodo(DeleteTodoEvent event, Emitter<TodoState> emit) async {
+    await _dataBaseHelper.deleteTodo(event.todoID);
+    await _dataBaseHelper.deleteTodoGroupMappingByTodo(event.todoID);
+    final todoList = state.todoList;
+    final groupTodoMap = state.groupTodoMap;
+    todoList.removeWhere((item) => item.id == event.todoID);
+    Set<String> removeKey = {};
+    groupTodoMap.forEach((key, value) {
+      for (TodoEntity item in value) {
+        if (item.id == event.todoID) {
+          removeKey.add(key);
+        }
       }
-      index++;
+    });
+    for (String key in removeKey) {
+      groupTodoMap[key]?.removeWhere((item) => item.id == event.todoID);
     }
     emit(state.copyWith(
       todoList: todoList,
-      lastChangeTime: DateTime.now().millisecondsSinceEpoch,
+      groupTodoMap: groupTodoMap,
+      lastUpdateDatetime: DateTime.now(),
     ));
-  }
-
-  void _deleteTodoEntity(DeleteToDoEvent event, Emitter<TodoState> emit) async {
-    List<TodoEntity> todoList = List.from(state.todoList);
-    todoList.removeWhere((item) => item.id == event.id);
-    emit(state.copyWith(todoList: todoList));
   }
 }

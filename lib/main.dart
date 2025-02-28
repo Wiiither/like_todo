@@ -21,14 +21,21 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           primaryColor: CustomColor.mainColor,
           useMaterial3: true,
+          scaffoldBackgroundColor: CustomColor.backgroundColor,
         ),
-        home: MultiBlocProvider(providers: [
-          BlocProvider(
-            create: (context) => TabBarBloc(),
-          ),
-          BlocProvider(
-            create: (context) => TodoBloc()..add(LoadToDoFromDatabaseEvent()),
-          ),
-        ], child: const MainPage()));
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => TabBarBloc(),
+            ),
+            BlocProvider(
+              create: (context) => TodoBloc()
+                ..add(ReloadTodoGroupEvent())
+                ..add(GetAllGroupTodoEvent())
+                ..add(ReloadAllTodoEvent()),
+            ),
+          ],
+          child: MainPage(),
+        ));
   }
 }

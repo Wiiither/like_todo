@@ -25,7 +25,6 @@ class _MainPageState extends State<MainPage>
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
-        print("更新 MainTab Index : ${_tabController.index}");
         final bloc = BlocProvider.of<TabBarBloc>(context);
         bloc.add(SelectTab(tabIndex: _tabController.index));
       }
@@ -37,17 +36,7 @@ class _MainPageState extends State<MainPage>
     return Scaffold(
       body: TDTabBarView(
         controller: _tabController,
-        children: [
-          TodoPage(
-            context: this.context,
-          ),
-          CalendarPage(
-            context: this.context,
-          ),
-          MePage(
-            context: this.context,
-          ),
-        ],
+        children: const [TodoPage(), CalendarPage(), MePage()],
       ),
       bottomNavigationBar: MainTabBar(
         tabController: _tabController,

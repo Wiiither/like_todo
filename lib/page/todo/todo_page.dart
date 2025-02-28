@@ -1,43 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/bloc/todo/todo_bloc.dart';
-import 'package:like_todo/component/todo/todo_header.dart';
+import 'package:like_todo/entity/todo_entity.dart';
+import 'package:like_todo/page/todo/create_todo_page.dart';
+import 'package:like_todo/page/todo/todo_content_page.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-import '../../component/todo/todo_item_view.dart';
+import '../../component/todo/todo_header.dart';
 
 class TodoPage extends StatelessWidget {
-  const TodoPage({super.key, required this.context});
-
-  final BuildContext context;
+  const TodoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size(double.infinity, 120),
-        child: SafeArea(
-          child: TodoHeader(
-            context: this.context,
+      appBar: const TodoHeader(),
+      backgroundColor: Colors.white,
+      body: const TodoContentPage(),
+      floatingActionButton: TDButton(
+        width: 48,
+        height: 48,
+        shape: TDButtonShape.circle,
+        style: TDButtonStyle(backgroundColor: CustomColor.backgroundColor),
+        onTap: () {
+          _handleAddTodo(context);
+        },
+        child: const Icon(TDIcons.add, color: CustomColor.mainColor),
+      ),
+    );
+  }
+
+  void _handleAddTodo(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (buildContext) => BlocProvider.value(
+          value: context.read<TodoBloc>(),
+          child: CreateTodoPage(
+            todoEntity: TodoEntity(id: newToDoID),
           ),
         ),
       ),
-      body: BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
-        return state.todoList.isEmpty
-            ? const TDEmpty(
-                type: TDEmptyType.plain,
-                emptyText: 'DooooooooIt',
-              )
-            : ListView.builder(
-                itemCount: state.todoList.length,
-                itemBuilder: (context, index) {
-                  return TodoItemView(
-                    context: this.context,
-                    todoEntity: state.todoList[index],
-                  );
-                },
-              );
-      }),
     );
   }
 }

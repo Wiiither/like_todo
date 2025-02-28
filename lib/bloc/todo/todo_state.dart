@@ -1,18 +1,33 @@
 part of 'todo_bloc.dart';
 
 class TodoState extends Equatable {
-  const TodoState({required this.todoList, required this.lastChangeTime});
+  const TodoState({
+    required this.todoList,
+    required this.todoGroupList,
+    required this.groupTodoMap,
+    required this.lastUpdateDatetime,
+  });
 
   final List<TodoEntity> todoList;
-  final int lastChangeTime;
+  final List<TodoGroupEntity> todoGroupList;
+  final Map<String, List<TodoEntity>> groupTodoMap;
+  final DateTime lastUpdateDatetime;
 
   @override
-  List<Object?> get props => [todoList, lastChangeTime];
+  List<Object?> get props =>
+      [todoList, todoGroupList, groupTodoMap, lastUpdateDatetime];
 
-  TodoState copyWith({List<TodoEntity>? todoList, int? lastChangeTime}) {
+  TodoState copyWith({
+    List<TodoEntity>? todoList,
+    List<TodoGroupEntity>? todoGroupList,
+    Map<String, List<TodoEntity>>? groupTodoMap,
+    DateTime? lastUpdateDatetime,
+  }) {
     return TodoState(
       todoList: todoList ?? this.todoList,
-      lastChangeTime: lastChangeTime ?? this.lastChangeTime,
+      todoGroupList: todoGroupList ?? this.todoGroupList,
+      groupTodoMap: groupTodoMap ?? this.groupTodoMap,
+      lastUpdateDatetime: lastUpdateDatetime ?? this.lastUpdateDatetime,
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:like_todo/component/todo/todo_tag_item_view.dart';
 import 'package:like_todo/entity/todo_tag_entity.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import '../../base/custom_color.dart';
+
 class CreateTodoTagView extends StatelessWidget {
   const CreateTodoTagView({
     super.key,
@@ -22,16 +24,17 @@ class CreateTodoTagView extends StatelessWidget {
           color: Colors.white,
         ),
         margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               '标签',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
+                color: CustomColor.mainColor,
               ),
             ).padding(bottom: 6),
             Wrap(

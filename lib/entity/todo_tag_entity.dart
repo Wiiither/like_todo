@@ -89,15 +89,15 @@ extension TodoTagEntityTypeExtension on TodoTagEntityType {
   Color typeColor() {
     switch (this) {
       case TodoTagEntityType.category:
-        return Colors.lightGreen;
+        return const Color(0xff079992);
       case TodoTagEntityType.complexity:
-        return Colors.purpleAccent;
+        return const Color(0xffF3A683);
       case TodoTagEntityType.urgency:
-        return Colors.redAccent;
+        return const Color(0xffFC5C65);
       case TodoTagEntityType.importance:
-        return Colors.blue;
+        return const Color(0xff4B7BEC);
       case TodoTagEntityType.completion:
-        return Colors.orange;
+        return const Color(0xff778BEB);
     }
   }
 

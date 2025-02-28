@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/entity/todo_entity.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-import '../../bloc/todo/todo_bloc.dart';
-
 class ShortTodoItemView extends StatelessWidget {
-  const ShortTodoItemView(
-      {super.key, required this.todoEntity, required this.context});
+  const ShortTodoItemView({super.key, required this.todoEntity});
 
   final TodoEntity todoEntity;
-  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +56,6 @@ class ShortTodoItemView extends StatelessWidget {
 
   void _changeTodoState() {
     print("点击ToDo");
-    final bloc = BlocProvider.of<TodoBloc>(context);
-    bloc.add(ChangeToDoCompleted(
-        id: todoEntity.id, isCompleted: !todoEntity.isCompleted));
+    // final bloc = BlocProvider.of<TodoBloc>(context);
   }
 }

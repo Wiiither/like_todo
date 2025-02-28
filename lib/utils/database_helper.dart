@@ -1,158 +1,308 @@
-import 'package:like_todo/entity/todo_entity.dart';
-import 'package:like_todo/entity/todo_repeat_type.dart';
-import 'package:like_todo/entity/todo_tag_entity.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
+import '../base/constant_value.dart';
+import '../entity/todo_entity.dart';
+import '../entity/todo_group_entity.dart';
+import '../entity/todo_tag_entity.dart';
 
-  factory DatabaseHelper() => _instance;
+class DataBaseHelper {
+  static final DataBaseHelper _instance = DataBaseHelper._internal();
+
+  factory DataBaseHelper() => _instance;
+
+  DataBaseHelper._internal();
 
   static Database? _database;
 
-  DatabaseHelper._internal();
-
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB();
+    _database = await _initDatabase();
     return _database!;
   }
 
-  Future<Database> _initDB() async {
-    String path = join(await getDatabasesPath(), 'todo.db');
-    return await openDatabase(path, version: 3, onCreate: (db, version) async {
-      await db.execute('''
-       CREATE TABLE todo_entity(
-             id TEXT PRIMARY KEY,
-            title TEXT,
-            mark TEXT,
-            isCompleted INTEGER,
-            type TEXT,
-            date TEXT,
-            startTime TEXT,
-            endTime TEXT,
-            repeatType TEXT,
-            tags TEXT
-       )
-      ''');
-    }, onUpgrade: (db, oldVersion, newVersion) async {
-      if (oldVersion < 3) {
-        print("更新表咯");
-        // 创建一个新的表，添加新字段并修改字段名
-        await db.execute('''
-          CREATE TABLE new_todo_entity(
-            id TEXT PRIMARY KEY,
-            title TEXT,
-            mark TEXT,
-            isCompleted INTEGER,
-            type TEXT,
-            date TEXT,
-            startTime TEXT,
-            endTime TEXT,
-            repeatType TEXT,
-            tags TEXT
-          )
-        ''');
-
-        // 复制旧表的数据到新表
-        await db.execute('''
-          INSERT INTO new_todo_entity (id, title, mark, isCompleted, type, startTime, endTime, tags)
-          SELECT id, title, mark, isCompleted, type, startTime, endTime, tags FROM todo_entity
-        ''');
-
-        // 删除旧表
-        await db.execute('DROP TABLE todo_entity');
-
-        // 重命名新表
-        await db.execute('ALTER TABLE new_todo_entity RENAME TO todo_entity');
-      }
-    });
-  }
-
-  // 插入数据
-  Future<void> insertTodoEntity(TodoEntity todo) async {
-    final db = await database;
-    await db.insert(
-      'todo_entity',
-      {
-        'id': todo.id,
-        'title': todo.title,
-        'mark': todo.mark,
-        'isCompleted': todo.isCompleted ? 1 : 0,
-        'type': todo.type.toString(),
-        'date': todo.date?.toIso8601String(),
-        'startTime': todo.startTime?.toIso8601String(),
-        'endTime': todo.endTime?.toIso8601String(),
-        'repeatType': todo.repeatType.key,
-        'tags': todo.tags.map((tag) => tag.toString()).join(','),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
+  Future<Database> _initDatabase() async {
+    print('数据库地址${await getDatabasesPath()}');
+    String path = join(await getDatabasesPath(), 'app_database.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
     );
   }
 
-  // 获取所有数据
-  Future<List<TodoEntity>> getTodoEntities() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('todo_entity');
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE todoGroup (
+        groupID TEXT PRIMARY KEY,
+        groupName TEXT NOT NULL,
+        isDefault INTEGER NOT NULL
+      )
+    ''');
 
+    // 插入默认分组
+    await db.insert('todoGroup', {
+      'groupID': defaultGroupID,
+      'groupName': '默认',
+      'isDefault': 1,
+    });
+
+    await db.execute('''
+      CREATE TABLE todo (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        mark TEXT NOT NULL,
+        startTime TEXT,
+        endTime TEXT,
+        completeTime TEXT,
+        tags TEXT,
+        isCompleted INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE todoGroupMapping (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        todoID TEXT NOT NULL,
+        groupID TEXT NOT NULL,
+        FOREIGN KEY (todoID) REFERENCES todo (id),
+        FOREIGN KEY (groupID) REFERENCES todoGroup (groupID)
+      )
+    ''');
+  }
+
+  //  添加 ToDo 表的增删改查方法
+  Future<int> insertTodo(TodoEntity todo) async {
+    final db = await database;
+    return await db.insert('todo', {
+      'id': todo.id,
+      'title': todo.title,
+      'mark': todo.mark,
+      'startTime': todo.startTime?.toIso8601String(),
+      'endTime': todo.endTime?.toIso8601String(),
+      'completeTime': todo.completeTime?.toIso8601String(),
+      'tags': todo.tags.map((tag) => tag.toString()).join(','),
+      'isCompleted': todo.isCompleted ? 1 : 0,
+    });
+  }
+
+  Future<List<TodoEntity>> getTodos() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('todo');
     return List.generate(maps.length, (i) {
       String tagsStr = maps[i]['tags'] as String;
-
       return TodoEntity(
-        id: maps[i]['id'],
+        id: maps[i]['id'].toString(),
         title: maps[i]['title'],
         mark: maps[i]['mark'],
-        isCompleted: maps[i]['isCompleted'] == 1,
-        type: TodoEntityType.values
-            .firstWhere((e) => e.toString() == maps[i]['type']),
-        date: maps[i]['date'] != null ? DateTime.parse(maps[i]['date']) : null,
-        startTime: maps[i]['startTime'] != null
-            ? DateTime.parse(maps[i]['startTime'])
-            : null,
-        endTime: maps[i]['endTime'] != null
-            ? DateTime.parse(maps[i]['endTime'])
-            : null,
-        repeatType:
-            TodoRepeatType.findDefaultTypeWithKey(maps[i]['repeatType']) ??
-                TodoRepeatType.defaultRepeatType[0],
+        startTime: maps[i]['startTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['startTime']),
+        endTime: maps[i]['endTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['endTime']),
+        completeTime: maps[i]['completeTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['completeTime']),
         tags: tagsStr.isEmpty
             ? []
             : tagsStr.split(',').map((tag) {
                 return TodoTagEntity.fromString(tag);
               }).toList(),
+        isCompleted: maps[i]['isCompleted'] == 1,
       );
     });
   }
 
-  // 更新数据
-  Future<void> updateTodoEntity(TodoEntity todo) async {
+  Future<int> updateTodo(TodoEntity todo) async {
     final db = await database;
-    await db.update(
-      'todo_entity',
+    return await db.update(
+      'todo',
       {
         'title': todo.title,
         'mark': todo.mark,
-        'isCompleted': todo.isCompleted ? 1 : 0,
-        'type': todo.type.toString(),
-        'date': todo.date?.toIso8601String(),
         'startTime': todo.startTime?.toIso8601String(),
         'endTime': todo.endTime?.toIso8601String(),
-        'repeatType': todo.repeatType.key,
+        'completeTime': todo.completeTime?.toIso8601String(),
         'tags': todo.tags.map((tag) => tag.toString()).join(','),
+        'isCompleted': todo.isCompleted ? 1 : 0,
       },
       where: 'id = ?',
       whereArgs: [todo.id],
     );
   }
 
-  // 删除数据
-  Future<void> deleteTodoEntity(String id) async {
+  Future<int> deleteTodo(String id) async {
     final db = await database;
-    await db.delete(
-      'todo_entity',
+    return await db.delete(
+      'todo',
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  // 添加 todoGroup 表的增删改查方法
+  Future<int> insertTodoGroup(TodoGroupEntity group) async {
+    final db = await database;
+    return await db.insert('todoGroup', {
+      'groupID': group.groupID,
+      'groupName': group.groupName,
+      'isDefault': group.isDefault ? 1 : 0,
+    });
+  }
+
+  Future<List<TodoGroupEntity>> getTodoGroups() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('todoGroup');
+    return List.generate(maps.length, (i) {
+      return TodoGroupEntity(
+        groupID: maps[i]['groupID'],
+        groupName: maps[i]['groupName'],
+        isDefault: maps[i]['isDefault'] == 1,
+      );
+    });
+  }
+
+  Future<int> updateTodoGroup(TodoGroupEntity group) async {
+    final db = await database;
+    return await db.update(
+      'todoGroup',
+      {
+        'groupName': group.groupName,
+        'isDefault': group.isDefault ? 1 : 0,
+      },
+      where: 'groupID = ?',
+      whereArgs: [group.groupID],
+    );
+  }
+
+  Future<int> deleteTodoGroup(String groupID) async {
+    final db = await database;
+    return await db.delete(
+      'todoGroup',
+      where: 'groupID = ?',
+      whereArgs: [groupID],
+    );
+  }
+
+  // 添加 todoGroupMapping 表的增删改查方法
+  Future<int> insertTodoGroupMapping(String todoID, String groupID) async {
+    final db = await database;
+    return await db.insert('todoGroupMapping', {
+      'todoID': todoID,
+      'groupID': groupID,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getTodoGroupMappings() async {
+    final db = await database;
+    return await db.query('todoGroupMapping');
+  }
+
+  Future<int> updateTodoGroupMapping(int id, int todoID, String groupID) async {
+    final db = await database;
+    return await db.update(
+      'todoGroupMapping',
+      {
+        'todoID': todoID,
+        'groupID': groupID,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteTodoGroupMappingByTodo(String todoID) async {
+    final db = await database;
+    return await db.delete(
+      'todoGroupMapping',
+      where: 'todoID = ?',
+      whereArgs: [todoID],
+    );
+  }
+
+  Future<int> deleteTodoGroupMappingByGroup(String groupID) async {
+    final db = await database;
+    return await db.delete(
+      'todoGroupMapping',
+      where: 'groupID = ?',
+      whereArgs: [groupID],
+    );
+  }
+
+  Future<List<TodoEntity>> getTodosByGroup(String groupID) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT todo.* FROM todo
+      INNER JOIN todoGroupMapping ON todo.id = todoGroupMapping.todoID
+      WHERE todoGroupMapping.groupID = ?
+    ''', [groupID]);
+
+    return List.generate(maps.length, (i) {
+      String tagsStr = maps[i]['tags'] as String;
+      return TodoEntity(
+        id: maps[i]['id'].toString(),
+        title: maps[i]['title'],
+        mark: maps[i]['mark'],
+        startTime: maps[i]['startTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['startTime']),
+        endTime: maps[i]['endTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['endTime']),
+        completeTime: maps[i]['completeTime'] == null
+            ? null
+            : DateTime.tryParse(maps[i]['completeTime']),
+        tags: tagsStr.isEmpty
+            ? []
+            : tagsStr.split(',').map((tag) {
+                return TodoTagEntity.fromString(tag);
+              }).toList(),
+        isCompleted: maps[i]['isCompleted'] == 1,
+      );
+    });
+  }
+
+  Future<Map<String, List<TodoEntity>>> getAllGroupTodos() async {
+    final db = await database;
+    final List<Map<String, dynamic>> groupMaps = await db.query('todoGroup');
+    Map<String, List<TodoEntity>> groupTodosMap = {};
+
+    for (var group in groupMaps) {
+      String groupID = group['groupID'];
+      final List<Map<String, dynamic>> todoMaps = await db.rawQuery('''
+        SELECT todo.* FROM todo
+        INNER JOIN todoGroupMapping ON todo.id = todoGroupMapping.todoID
+        WHERE todoGroupMapping.groupID = ?
+      ''', [groupID]);
+
+      List<TodoEntity> todos = List.generate(todoMaps.length, (i) {
+        String tagsStr = todoMaps[i]['tags'] as String;
+        return TodoEntity(
+          id: todoMaps[i]['id'].toString(),
+          title: todoMaps[i]['title'],
+          mark: todoMaps[i]['mark'],
+          startTime: todoMaps[i]['startTime'] == null
+              ? null
+              : DateTime.tryParse(todoMaps[i]['startTime']),
+          endTime: todoMaps[i]['endTime'] == null
+              ? null
+              : DateTime.tryParse(todoMaps[i]['endTime']),
+          completeTime: todoMaps[i]['completeTime'] == null
+              ? null
+              : DateTime.tryParse(todoMaps[i]['completeTime']),
+          tags: tagsStr.isEmpty
+              ? []
+              : tagsStr.split(',').map((tag) {
+                  return TodoTagEntity.fromString(tag);
+                }).toList(),
+          isCompleted: todoMaps[i]['isCompleted'] == 1,
+        );
+      });
+
+      groupTodosMap[groupID] = todos;
+    }
+
+    return groupTodosMap;
   }
 }

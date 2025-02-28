@@ -33,10 +33,7 @@ class TimelineItemView extends StatelessWidget {
             Expanded(
               flex: 8,
               child: entity.todoEntity != null
-                  ? ShortTodoItemView(
-                      todoEntity: entity.todoEntity!,
-                      context: context,
-                    )
+                  ? ShortTodoItemView(todoEntity: entity.todoEntity!)
                   : Container(),
             )
           ],

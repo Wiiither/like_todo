@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.5.1
   sqflite: ^2.4.1
   path: ^1.8.0
+  flutter_svg_provider: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -45,3 +46,5 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 flutter:
   uses-material-design: true
+  assets:
+    - assets/svg/

@@ -5,12 +5,10 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 class MeItemView extends StatelessWidget {
   const MeItemView({
     super.key,
-    required this.context,
     required this.title,
     this.onTap,
   });
 
-  final BuildContext context;
   final String title;
   final VoidCallback? onTap;
 

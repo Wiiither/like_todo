@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../../base/custom_color.dart';
 
 abstract class CreateTodoSelectViewDataSource {
   String getDisplayName();
@@ -41,11 +44,21 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
         }).toList();
         TDPicker.showMultiPicker(
           context,
+          pickerHeight: 300,
           onConfirm: (selected) {
-            print("选择的结果 $selected");
             onSelectedCallback?.call(dataSource[selected[0]]);
             Navigator.pop(context);
           },
+          leftTextStyle: const TextStyle(
+            color: Colors.grey,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          rightTextStyle: const TextStyle(
+            color: CustomColor.mainColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
           initialIndexes: [initIndex],
           data: [dataArray],
         );
@@ -55,7 +68,7 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
           color: Colors.white,
         ),
         margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             Text(
@@ -63,6 +76,7 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
+                color: CustomColor.mainColor,
               ),
             ),
             const Spacer(),
@@ -73,7 +87,8 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
             const Icon(
               TDIcons.chevron_right,
               color: Colors.grey,
-            ),
+              size: 22,
+            ).padding(left: 15),
           ],
         ),
       ),

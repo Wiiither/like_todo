@@ -1,98 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-enum SelectedTimeType { day, hour }
+import '../../base/custom_color.dart';
+import 'calendar_time_select_view.dart';
 
 class CreateTodoTimeView extends StatelessWidget {
   const CreateTodoTimeView({
     super.key,
     required this.title,
     required this.content,
-    this.dateTime,
-    required this.timeType,
+    this.clearState = false,
     this.onSelectedDateTime,
+    this.onClearDateTime,
   });
 
   final String title;
   final String content;
-  final DateTime? dateTime;
-  final SelectedTimeType timeType;
+  final bool clearState;
   final Function(DateTime)? onSelectedDateTime;
+  final VoidCallback? onClearDateTime;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        TDPicker.showDatePicker(
-          context,
-          title: title,
-          onConfirm: (selected) {
-            if (onSelectedDateTime != null) {
-              print("selected $selected");
-              int year = selected["year"] ?? 2025;
-              int month = selected["month"] ?? 1;
-              int day = selected["day"] ?? 1;
-              int hour = selected["hour"] ?? 12;
-              int minute = selected["minute"] ?? 0;
-              DateTime newDatetime =
-                  DateTime(year, month, day + 1, hour, minute);
-              onSelectedDateTime!.call(newDatetime);
-            }
-            Navigator.of(context).pop();
-          },
-          useYear: timeType == SelectedTimeType.day,
-          useMonth: timeType == SelectedTimeType.day,
-          useDay: timeType == SelectedTimeType.day,
-          useHour: timeType == SelectedTimeType.hour,
-          useMinute: timeType == SelectedTimeType.hour,
-          pickerHeight: 250,
-          dateStart: timeType == SelectedTimeType.day
-              ? [
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                ]
-              : [
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                ],
-          dateEnd: timeType == SelectedTimeType.day
-              ? [
-                  DateTime.now().year + 1,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                ]
-              : [
-                  0,
-                  0,
-                  0,
-                  23,
-                  59,
-                ],
-          initialDate: timeType == SelectedTimeType.day
-              ? [
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                ]
-              : [
-                  0,
-                  0,
-                  0,
-                  DateTime.now().hour,
-                  DateTime.now().minute,
-                ],
-        );
+        _showCalendarTimeSelectView(context);
       },
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
         ),
         margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             Text(
@@ -100,6 +40,7 @@ class CreateTodoTimeView extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
+                color: CustomColor.mainColor,
               ),
             ),
             const Spacer(),
@@ -107,13 +48,39 @@ class CreateTodoTimeView extends StatelessWidget {
               content,
               style: const TextStyle(fontSize: 15, color: Colors.grey),
             ),
-            const Icon(
-              TDIcons.chevron_right,
-              color: Colors.grey,
-            ),
+            GestureDetector(
+              onTap: () {
+                if (clearState) {
+                  onClearDateTime?.call();
+                } else {
+                  _showCalendarTimeSelectView(context);
+                }
+              },
+              child: Icon(
+                clearState
+                    ? TDIcons.close_circle_filled
+                    : TDIcons.chevron_right,
+                color: Colors.grey,
+                size: clearState ? 17 : 22,
+              ),
+            ).padding(left: 15),
           ],
         ),
       ),
     );
+  }
+
+  void _showCalendarTimeSelectView(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (buildContext) {
+          return CalendarTimeSelectView(
+            title: '',
+            onSelectedDateTime: (dateTime) {
+              onSelectedDateTime?.call(dateTime);
+            },
+          );
+        });
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:like_todo/component/todo/todo_tag_category_group_view.dart';
 import 'package:like_todo/component/todo/todo_tag_select_header.dart';
 import 'package:like_todo/entity/todo_tag_entity.dart';
@@ -29,6 +29,8 @@ class _TodoTagSelectPageState extends State<TodoTagSelectPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(20)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -40,7 +42,7 @@ class _TodoTagSelectPageState extends State<TodoTagSelectPage> {
               }),
           SizedBox(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.4,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: ListView.builder(
                 itemCount: TodoTagEntityType.values.length + 1,
                 itemBuilder: (context, index) {
@@ -78,7 +80,5 @@ class _TodoTagSelectPageState extends State<TodoTagSelectPage> {
         _selectedTags.add(tag);
       }
     });
-    print('更新Tag $tag');
-    print('_selectedTags $_selectedTags');
   }
 }

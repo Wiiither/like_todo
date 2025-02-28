@@ -5,9 +5,9 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 import '../../component/me/me_item_view.dart';
 
 class MePage extends StatelessWidget {
-  const MePage({super.key, required this.context});
-
-  final BuildContext context;
+  const MePage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,6 @@ class MePage extends StatelessWidget {
       body: Column(
         children: [
           MeItemView(
-            context: this.context,
             title: '设置',
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {

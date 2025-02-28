@@ -1,8 +1,9 @@
+## Like ToDo
 
-##  DooooIt
-想法是做一个简约的TodoList。
+做一个符合自己想法的 ToDo List
 
 ### 想要制作的内容
+
 1. 多级ToDo
 2. 多平台支持
 3. 支持云同步

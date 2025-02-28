@@ -7,8 +7,33 @@ class TodoEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class AddNewToDoEvent extends TodoEvent {
-  const AddNewToDoEvent({required this.todoEntity});
+class ReloadTodoGroupEvent extends TodoEvent {}
+
+class ReloadAllTodoEvent extends TodoEvent {}
+
+class AddNewTodoEvent extends TodoEvent {
+  const AddNewTodoEvent({required this.todoEntity, required this.groupEntity});
+
+  final TodoEntity todoEntity;
+  final TodoGroupEntity groupEntity;
+
+  @override
+  List<Object?> get props => [todoEntity, groupEntity];
+}
+
+class GetTodoByGroupEvent extends TodoEvent {
+  const GetTodoByGroupEvent({required this.groupID});
+
+  final String groupID;
+
+  @override
+  List<Object?> get props => [groupID];
+}
+
+class GetAllGroupTodoEvent extends TodoEvent {}
+
+class UpdateTodoEvent extends TodoEvent {
+  const UpdateTodoEvent({required this.todoEntity});
 
   final TodoEntity todoEntity;
 
@@ -16,44 +41,11 @@ class AddNewToDoEvent extends TodoEvent {
   List<Object?> get props => [todoEntity];
 }
 
-class AddNewToDoArrayEvent extends TodoEvent {
-  const AddNewToDoArrayEvent({required this.todoEntityArray});
+class DeleteTodoEvent extends TodoEvent {
+  const DeleteTodoEvent({required this.todoID});
 
-  final List<TodoEntity> todoEntityArray;
-
-  @override
-  List<Object?> get props => [todoEntityArray];
-}
-
-class LoadToDoFromDatabaseEvent extends TodoEvent {
-  @override
-  List<Object?> get props => [];
-}
-
-class ChangeToDoCompleted extends TodoEvent {
-  const ChangeToDoCompleted({required this.id, required this.isCompleted});
-
-  final String id;
-  final bool isCompleted;
+  final String todoID;
 
   @override
-  List<Object?> get props => [id, isCompleted];
-}
-
-class UpdateToDoEvent extends TodoEvent {
-  const UpdateToDoEvent({required this.todoEntity});
-
-  final TodoEntity todoEntity;
-
-  @override
-  List<Object?> get props => [todoEntity];
-}
-
-class DeleteToDoEvent extends TodoEvent {
-  const DeleteToDoEvent({required this.id});
-
-  final String id;
-
-  @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [todoID];
 }

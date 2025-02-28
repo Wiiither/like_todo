@@ -1,33 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:like_todo/base/custom_color.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-typedef StringCallBack = Function(String);
-
-class CreateTodoContentView extends StatelessWidget {
-  CreateTodoContentView({
+class CreateTodoContentView extends StatefulWidget {
+  const CreateTodoContentView({
     super.key,
     this.defaultTitle,
     this.defaultContent,
     this.titleEditComplete,
     this.contentEditComplete,
-  }) {
-    titleController.text = defaultTitle ?? '';
-    contentController.text = defaultContent ?? '';
-  }
+  });
 
   final String? defaultTitle;
   final String? defaultContent;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController contentController = TextEditingController();
-  final StringCallBack? titleEditComplete;
-  final StringCallBack? contentEditComplete;
+  final Function(String)? titleEditComplete;
+  final Function(String)? contentEditComplete;
+
+  @override
+  State<CreateTodoContentView> createState() => _CreateTodoContentViewState();
+}
+
+class _CreateTodoContentViewState extends State<CreateTodoContentView> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final FocusNode _titleFocusNode = FocusNode();
+  final FocusNode _contentFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.defaultTitle ?? '';
+    _contentController.text = widget.defaultContent ?? '';
+    _titleFocusNode.addListener(() {
+      if (!_titleFocusNode.hasFocus) {
+        widget.titleEditComplete?.call(_titleController.text);
+      }
+    });
+    _contentFocusNode.addListener(() {
+      if (!_contentFocusNode.hasFocus) {
+        widget.contentEditComplete?.call(_contentController.text);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: const BoxDecoration(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: const [
+          BoxShadow(
+            color: CustomColor.shadowColor,
+            spreadRadius: 0,
+            blurRadius: 3,
+          )
+        ],
       ),
       child: Column(
         children: [
@@ -49,13 +78,13 @@ class CreateTodoContentView extends StatelessWidget {
       textStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
+        color: CustomColor.mainColor,
       ),
+      cursorColor: CustomColor.mainColor,
       showBottomDivider: false,
       needClear: false,
-      controller: titleController,
-      onChanged: (content) {
-        titleEditComplete?.call(content);
-      },
+      focusNode: _titleFocusNode,
+      controller: _titleController,
     );
   }
 
@@ -65,11 +94,15 @@ class CreateTodoContentView extends StatelessWidget {
       maxLines: 6,
       hintText: "备注",
       showBottomDivider: false,
+      textStyle: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+        color: CustomColor.mainColor,
+      ),
+      cursorColor: CustomColor.mainColor,
       needClear: false,
-      controller: contentController,
-      onChanged: (content) {
-        contentEditComplete?.call(content);
-      },
+      focusNode: _contentFocusNode,
+      controller: _contentController,
     );
   }
 }
