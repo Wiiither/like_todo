@@ -19,7 +19,7 @@ class MeItemView extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(color: Colors.white),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Row(
           children: [
             Text(

@@ -30,6 +30,30 @@ extension DateTimeListExtension on List<DateTime> {
     print('$year 的内容有 $sortedDays');
     return sortedDays;
   }
+
+  int getMaxConsecutiveDays() {
+    if (isEmpty) return 0;
+
+    List<DateTime> tmpDateTimeList = List.from(this);
+    tmpDateTimeList.sort();
+
+    int maxConsecutiveDays = 1;
+    int currentStreak = 1;
+
+    for (int i = 1; i < length; i++) {
+      if (this[i].difference(this[i - 1]).inDays == 1) {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+
+      if (currentStreak > maxConsecutiveDays) {
+        maxConsecutiveDays = currentStreak;
+      }
+    }
+
+    return maxConsecutiveDays;
+  }
 }
 
 extension DateTimeExtension on DateTime {
@@ -62,5 +86,10 @@ extension DateTimeExtension on DateTime {
       default:
         return "";
     }
+  }
+
+  bool isToday() {
+    DateTime now = DateTime.now();
+    return day == now.day && month == now.month && year == now.year;
   }
 }

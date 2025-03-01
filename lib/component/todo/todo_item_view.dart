@@ -41,8 +41,10 @@ class TodoItemView extends StatelessWidget {
               children: [
                 Text(
                   todoEntity.title,
-                  style: const TextStyle(
-                    color: CustomColor.mainColor,
+                  style: TextStyle(
+                    color: todoEntity.isCompleted
+                        ? CustomColor.mainColor.withOpacity(0.2)
+                        : CustomColor.mainColor,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
@@ -52,7 +54,9 @@ class TodoItemView extends StatelessWidget {
                   child: Text(
                     '备注：${todoEntity.mark}',
                     style: TextStyle(
-                      color: CustomColor.mainColor.withOpacity(0.7),
+                      color: todoEntity.isCompleted
+                          ? CustomColor.mainColor.withOpacity(0.2)
+                          : CustomColor.mainColor.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ).padding(top: 4),
@@ -62,7 +66,9 @@ class TodoItemView extends StatelessWidget {
                   child: Text(
                     '开始时间：${_startTimeString(todoEntity.startTime ?? DateTime.now())}',
                     style: TextStyle(
-                      color: CustomColor.mainColor.withOpacity(0.7),
+                      color: todoEntity.isCompleted
+                          ? CustomColor.mainColor.withOpacity(0.2)
+                          : CustomColor.mainColor.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ).padding(top: 4),
@@ -71,7 +77,9 @@ class TodoItemView extends StatelessWidget {
             ),
             const Spacer(),
             GestureDetector(
-              onTap: _changeTodoState,
+              onTap: () {
+                _changeTodoState(context);
+              },
               child: Icon(
                 todoEntity.isCompleted
                     ? TDIcons.check_circle_filled
@@ -89,8 +97,18 @@ class TodoItemView extends StatelessWidget {
     return "${'${dateTime.hour}'.padLeft(2, '0')}:${'${dateTime.minute}'.padLeft(2, '0')}";
   }
 
-  void _changeTodoState() {
-    print("点击ToDo");
+  void _changeTodoState(BuildContext context) {
+    final bloc = context.read<TodoBloc>();
+    if (todoEntity.completeTime == null && todoEntity.isCompleted == false) {
+      //  此时未完成
+      todoEntity.isCompleted = true;
+      todoEntity.completeTime = DateTime.now();
+    } else {
+      //  此时已完成
+      todoEntity.isCompleted = false;
+      todoEntity.completeTime = null;
+    }
+    bloc.add(UpdateTodoEvent(todoEntity: todoEntity));
   }
 
   void _showTodoDetail(BuildContext context) {

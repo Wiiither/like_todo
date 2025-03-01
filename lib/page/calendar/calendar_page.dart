@@ -24,7 +24,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TDNavBar(
-        title: '时间轴',
+        title: 'Time Line',
         titleColor: CustomColor.mainColor,
         titleFont: Font(size: 20, lineHeight: 22),
         titleFontWeight: FontWeight.w600,
