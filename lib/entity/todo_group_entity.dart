@@ -9,7 +9,7 @@ class TodoGroupEntity extends CreateTodoSelectViewDataSource {
 
   final String groupID;
   final String groupName;
-  final bool isDefault;
+  bool isDefault;
 
   TodoGroupEntity copyWith({
     String? groupID,

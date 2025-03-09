@@ -199,7 +199,8 @@ class DataBaseHelper {
     return await db.query('todoGroupMapping');
   }
 
-  Future<int> updateTodoGroupMapping(int id, int todoID, String groupID) async {
+  Future<int> updateTodoGroupMapping(
+      int id, String todoID, String groupID) async {
     final db = await database;
     return await db.update(
       'todoGroupMapping',
@@ -209,6 +210,19 @@ class DataBaseHelper {
       },
       where: 'id = ?',
       whereArgs: [id],
+    );
+  }
+
+  Future<int> updateTodoGroupMappingByToDoID(
+      String todoID, String groupID) async {
+    final db = await database;
+    return await db.update(
+      'todoGroupMapping',
+      {
+        'groupID': groupID,
+      },
+      where: 'todoID = ?',
+      whereArgs: [todoID],
     );
   }
 

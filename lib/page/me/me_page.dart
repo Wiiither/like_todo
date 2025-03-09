@@ -5,6 +5,7 @@ import 'package:like_todo/base/time_utils.dart';
 import 'package:like_todo/bloc/todo/todo_bloc.dart';
 import 'package:like_todo/component/me/me_statistic_item_view.dart';
 import 'package:like_todo/entity/todo_entity.dart';
+import 'package:like_todo/page/group/group_manager_page.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
@@ -27,8 +28,20 @@ class MePage extends StatelessWidget {
           children: [
             _buildStatisticItems(todoList: state.todoList),
             const SizedBox(height: 20),
-            MeItemView(title: '分组管理'),
-            MeItemView(title: '关于 Like ToDo'),
+            MeItemView(
+              title: '分组管理',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (buildContext) => BlocProvider.value(
+                      value: context.read<TodoBloc>(),
+                      child: GroupManagerPage(),
+                    ),
+                  ),
+                );
+              },
+            )
           ],
         );
       }),

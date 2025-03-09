@@ -49,3 +49,43 @@ class DeleteTodoEvent extends TodoEvent {
   @override
   List<Object?> get props => [todoID];
 }
+
+class AddGroupEvent extends TodoEvent {
+  const AddGroupEvent({required this.groupEntity});
+
+  final TodoGroupEntity groupEntity;
+
+  @override
+  List<Object?> get props => [groupEntity];
+}
+
+class DeleteGroupEvent extends TodoEvent {
+  const DeleteGroupEvent({
+    required this.groupID,
+    required this.isReserveToDo,
+  });
+
+  final String groupID;
+  final bool isReserveToDo;
+
+  @override
+  List<Object?> get props => [groupID];
+}
+
+class EditGroupEvent extends TodoEvent {
+  const EditGroupEvent({required this.todoGroupEntity});
+
+  final TodoGroupEntity todoGroupEntity;
+
+  @override
+  List<Object?> get props => [todoGroupEntity];
+}
+
+class SetDefaultGroupEvent extends TodoEvent {
+  const SetDefaultGroupEvent({required this.groupID});
+
+  final String groupID;
+
+  @override
+  List<Object?> get props => [groupID];
+}
