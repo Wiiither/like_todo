@@ -17,16 +17,19 @@ class MeItemView extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white, width: 1.5)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Row(
           children: [
             Text(
               title,
               style: const TextStyle(
                 color: CustomColor.mainColor,
-                fontSize: 17,
+                fontSize: 15,
               ),
             ),
             const Spacer(),

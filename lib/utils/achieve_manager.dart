@@ -16,6 +16,8 @@ class AchieveManager {
   List<AchievementEntity> achievements = [];
   SharedPreferences? preferences;
 
+  bool isAnyHiddenAchieved = false;
+
   void loadAchievement(List<TodoEntity> todoList) async {
     this.todoList = todoList;
 
@@ -205,6 +207,9 @@ class AchieveManager {
         icon: 'icon',
         achieveTime: midnightWorkerCheckResult.achieveTime);
     achievements.add(midnightWorker);
+
+    isAnyHiddenAchieved = achievements.any((item) =>
+        item.type == AchievementType.hidden && item.achieveTime != null);
   }
 
   AchievementCheckResult? _getCheckResult(

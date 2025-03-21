@@ -6,6 +6,23 @@ enum AchievementType {
   hidden, // 隐藏成就
 }
 
+extension AchievementTypeExtension on AchievementType {
+  String title() {
+    switch (this) {
+      case AchievementType.taskComplete:
+        return "任务完成";
+      case AchievementType.taskStreak:
+        return "连续完成";
+      case AchievementType.timeManagement:
+        return "时间管理";
+      case AchievementType.special:
+        return "特殊";
+      case AchievementType.hidden:
+        return "隐藏";
+    }
+  }
+}
+
 class AchievementCheckResult {
   final int nowProgress;
   final DateTime? achieveTime;

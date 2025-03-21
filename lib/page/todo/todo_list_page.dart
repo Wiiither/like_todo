@@ -44,10 +44,10 @@ class TodoListPage extends StatelessWidget {
       });
     }
 
-    return isAllComplete
-        ? SvgAssets.loadSvg(all_complete_svg)
-        : todoList.isEmpty
-            ? SvgAssets.loadSvg(no_todo_svg)
+    return todoList.isEmpty
+        ? SvgAssets.loadSvg(no_todo_svg)
+        : isAllComplete
+            ? SvgAssets.loadSvg(all_complete_svg)
             : ListView.builder(
                 itemCount: todoList.length,
                 itemBuilder: (context, index) {
