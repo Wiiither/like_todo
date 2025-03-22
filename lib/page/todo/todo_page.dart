@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
-import 'package:like_todo/bloc/todo/todo_bloc.dart';
-import 'package:like_todo/entity/todo_entity.dart';
-import 'package:like_todo/page/todo/create_todo_page.dart';
 import 'package:like_todo/page/todo/todo_content_page.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
+import '../../bloc/todo/todo_bloc.dart';
 import '../../component/todo/todo_header.dart';
+import '../../entity/todo_entity.dart';
+import 'create_todo_page.dart';
 
 class TodoPage extends StatelessWidget {
   const TodoPage({super.key});

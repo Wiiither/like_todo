@@ -67,7 +67,7 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
         decoration: const BoxDecoration(
           color: Colors.white,
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 15),
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [

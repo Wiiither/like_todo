@@ -13,6 +13,10 @@ class CreateTodoTimeView extends StatelessWidget {
     this.clearState = false,
     this.onSelectedDateTime,
     this.onClearDateTime,
+    this.buttonTitle,
+    this.isPrefButtonSelected,
+    this.buttonAction,
+    this.buttonLongAction,
   });
 
   final String title;
@@ -20,6 +24,11 @@ class CreateTodoTimeView extends StatelessWidget {
   final bool clearState;
   final Function(DateTime)? onSelectedDateTime;
   final VoidCallback? onClearDateTime;
+
+  final String? buttonTitle;
+  final bool? isPrefButtonSelected; //  按钮是否默认被选择
+  final VoidCallback? buttonAction;
+  final VoidCallback? buttonLongAction;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +40,7 @@ class CreateTodoTimeView extends StatelessWidget {
         decoration: const BoxDecoration(
           color: Colors.white,
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 15),
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
@@ -63,7 +72,29 @@ class CreateTodoTimeView extends StatelessWidget {
                 color: Colors.grey,
                 size: clearState ? 17 : 22,
               ),
-            ).padding(left: 15),
+            ).padding(right: 10, left: 10),
+            Visibility(
+              child: Stack(
+                children: [
+                  TDButton(
+                    onTap: buttonAction,
+                    onLongPress: buttonLongAction,
+                    size: TDButtonSize.extraSmall,
+                    height: 24,
+                    style: TDButtonStyle(
+                      backgroundColor: (isPrefButtonSelected ?? false)
+                          ? CustomColor.mainColor
+                          : Colors.grey.shade200,
+                      textColor: (isPrefButtonSelected ?? false)
+                          ? Colors.white
+                          : CustomColor.mainColor,
+                    ),
+                    text: buttonTitle ?? '',
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

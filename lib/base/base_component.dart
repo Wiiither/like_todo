@@ -3,10 +3,12 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import 'custom_color.dart';
 
-TDNavBar buildBaseNavBar(
-    {required BuildContext context,
-    required String title,
-    VoidCallback? onBack}) {
+TDNavBar buildBaseNavBar({
+  required BuildContext context,
+  required String title,
+  VoidCallback? onBack,
+  List<TDNavBarItem>? rightBarItems,
+}) {
   return TDNavBar(
     title: title,
     titleColor: CustomColor.mainColor,
@@ -23,5 +25,6 @@ TDNavBar buildBaseNavBar(
             Navigator.maybePop(context);
           })
     ],
+    rightBarItems: rightBarItems,
   );
 }
