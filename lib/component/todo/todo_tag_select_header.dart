@@ -15,27 +15,36 @@ class TodoTagSelectHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: CustomColor.mainColor,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-          ),
+        Row(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: CustomColor.mainColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            TDButton(
+              text: '确定',
+              size: TDButtonSize.extraSmall,
+              textStyle: const TextStyle(fontSize: 12),
+              style: TDButtonStyle(
+                  textColor: Colors.white,
+                  backgroundColor: CustomColor.mainColor),
+              onTap: confirmCallback,
+            )
+          ],
         ),
-        const Spacer(),
-        TDButton(
-          text: '确定',
-          size: TDButtonSize.small,
-          style: TDButtonStyle(
-            textColor: Colors.white,
-            backgroundColor: CustomColor.mainColor,
-          ),
-          onTap: confirmCallback,
+        const TDDivider(
+          margin: EdgeInsets.only(top: 15),
+          color: CustomColor.quaternaryColor,
         )
       ],
-    ).padding(horizontal: 20, vertical: 20);
+    ).padding(horizontal: 20, top: 20, bottom: 10);
   }
 }

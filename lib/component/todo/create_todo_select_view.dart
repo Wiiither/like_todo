@@ -82,11 +82,15 @@ class CreateTodoSelectView<T extends CreateTodoSelectViewDataSource>
             const Spacer(),
             Text(
               defaultValue?.getDisplayName() ?? defaultText,
-              style: const TextStyle(fontSize: 15, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: CustomColor.secondaryColor,
+              ),
             ),
             const Icon(
               TDIcons.chevron_right,
-              color: Colors.grey,
+              color: CustomColor.secondaryGray,
               size: 22,
             ).padding(left: 15),
           ],

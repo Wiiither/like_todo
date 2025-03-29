@@ -42,7 +42,7 @@ class _TodoTagSelectPageState extends State<TodoTagSelectPage> {
               }),
           SizedBox(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.6,
+            height: MediaQuery.of(context).size.height * 0.7,
             child: ListView.builder(
                 itemCount: TodoTagEntityType.values.length + 1,
                 itemBuilder: (context, index) {
@@ -52,6 +52,12 @@ class _TodoTagSelectPageState extends State<TodoTagSelectPage> {
                       tags: _selectedTags,
                       selectedTags: _selectedTags,
                       onSelectedTag: _updateTags,
+                      actionTitle: '清空',
+                      action: () {
+                        setState(() {
+                          _selectedTags.clear();
+                        });
+                      },
                     );
                   } else {
                     TodoTagEntityType type =

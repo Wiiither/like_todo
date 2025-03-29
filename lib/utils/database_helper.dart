@@ -6,6 +6,14 @@ import '../entity/todo_entity.dart';
 import '../entity/todo_group_entity.dart';
 import '../entity/todo_tag_entity.dart';
 
+/**
+ * 数据库更新：
+ * version 1:
+ * - 创建表 todoGroup，todo，todoGroupMapping
+ * version 2:
+ * - 创建表 todoTag，
+ */
+
 class DataBaseHelper {
   static final DataBaseHelper _instance = DataBaseHelper._internal();
 
@@ -26,8 +34,9 @@ class DataBaseHelper {
     String path = join(await getDatabasesPath(), 'app_database.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -69,6 +78,18 @@ class DataBaseHelper {
         FOREIGN KEY (groupID) REFERENCES todoGroup (groupID)
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+      CREATE TABLE todoTag (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tagName TEXT NOT NULL,
+        tagType TEXT NOT NULL
+      )
+    ''');
+    }
   }
 
   //  添加 ToDo 表的增删改查方法
@@ -318,5 +339,35 @@ class DataBaseHelper {
     }
 
     return groupTodosMap;
+  }
+
+  Future<int> insertTag(TodoTagEntity tag) async {
+    final db = await database;
+    return await db.insert(
+        'todoTag', {'tagName': tag.name, 'tagType': tag.type.toString()});
+  }
+
+  Future<int> deleteTag(TodoTagEntity tag) async {
+    final db = await database;
+    return await db.delete(
+      'todoTag',
+      where: 'tagName = ? AND tagType = ?',
+      whereArgs: [tag.name, tag.type.toString()],
+    );
+  }
+
+  Future<List<TodoTagEntity>> loadAllTags() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('todoTag');
+    return List.generate(maps.length, (i) {
+      String typeType = maps[i]["tagType"];
+
+      TodoTagEntityType type = TodoTagEntityType.values.firstWhere(
+        (e) => e.toString() == typeType,
+        orElse: () =>
+            throw ArgumentError('Invalid TodoTagEntityType: $typeType'),
+      );
+      return TodoTagEntity(name: maps[i]["tagName"], type: type);
+    });
   }
 }

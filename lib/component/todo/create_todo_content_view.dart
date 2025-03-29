@@ -46,24 +46,19 @@ class _CreateTodoContentViewState extends State<CreateTodoContentView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: const [
-          BoxShadow(
-            color: CustomColor.shadowColor,
-            spreadRadius: 0,
-            blurRadius: 3,
-          )
-        ],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: CustomColor.quaternaryColor, width: 1.5),
       ),
       child: Column(
         children: [
           _buildTitleInput(),
           const TDDivider(
-            isDashed: true,
             margin: EdgeInsets.symmetric(horizontal: 20),
+            color: CustomColor.quaternaryColor,
+            height: 0.5,
           ),
           _buildMarkInput(),
         ],
@@ -83,6 +78,9 @@ class _CreateTodoContentViewState extends State<CreateTodoContentView> {
       cursorColor: CustomColor.mainColor,
       showBottomDivider: false,
       needClear: false,
+      onTapOutside: (_) {
+        _titleFocusNode.unfocus();
+      },
       focusNode: _titleFocusNode,
       controller: _titleController,
     );
@@ -91,16 +89,20 @@ class _CreateTodoContentViewState extends State<CreateTodoContentView> {
   //  输入备注部分
   Widget _buildMarkInput() {
     return TDInput(
-      maxLines: 6,
+      maxLines: 5,
       hintText: "备注",
       showBottomDivider: false,
       textStyle: const TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
+        fontSize: 17,
+        fontWeight: FontWeight.w400,
         color: CustomColor.mainColor,
       ),
       cursorColor: CustomColor.mainColor,
       needClear: false,
+      onTapOutside: (_) {
+        _contentFocusNode.unfocus();
+      },
+      inputAction: TextInputAction.done,
       focusNode: _contentFocusNode,
       controller: _contentController,
     );

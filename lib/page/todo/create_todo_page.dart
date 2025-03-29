@@ -90,151 +90,144 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
             TDNavBarItem(
               icon: TDIcons.help_circle,
               iconColor: CustomColor.mainColor,
+              iconSize: 20,
               action: _showHelp,
             )
           ]),
       body: SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            _unFocusAll(context);
-          },
-          child: Column(
-            children: [
-              CreateTodoContentView(
-                defaultTitle: widget.todoEntity.title,
-                defaultContent: widget.todoEntity.mark,
-                titleEditComplete: (title) {
-                  widget.todoEntity.title = title;
-                },
-                contentEditComplete: (content) {
-                  widget.todoEntity.mark = content;
-                },
+        child: Column(
+          children: [
+            CreateTodoContentView(
+              defaultTitle: widget.todoEntity.title,
+              defaultContent: widget.todoEntity.mark,
+              titleEditComplete: (title) {
+                widget.todoEntity.title = title;
+              },
+              contentEditComplete: (content) {
+                widget.todoEntity.mark = content;
+              },
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  width: 1.5,
+                  color: CustomColor.quaternaryColor,
+                ),
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: CustomColor.shadowColor,
-                      blurRadius: 5,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    CreateTodoTimeView(
-                      title: '开始时间',
-                      content: startTime != null
-                          ? _dateTimeToString(startTime)
-                          : '请选择',
-                      clearState: startTime != null,
-                      isPrefButtonSelected: startTimeNow,
-                      onSelectedDateTime: (dateTime) {
-                        setState(() {
-                          widget.todoEntity.startTime = dateTime;
-                        });
-                      },
-                      onClearDateTime: () {
-                        setState(() {
-                          widget.todoEntity.startTime = null;
-                        });
-                      },
-                      buttonTitle: '当前',
-                      buttonAction: () {
-                        setState(() {
-                          widget.todoEntity.startTime = DateTime.now();
-                        });
-                      },
-                      buttonLongAction: () async {
-                        await _preferences!
-                            .setBool(todoStartTimeNow, !startTimeNow);
-                        if (startTimeNow) {
-                          TDToast.showText('取消默认开始时间为当前', context: context);
-                        } else {
-                          TDToast.showText('设置默认开始时间为当前', context: context);
-                        }
+              child: Column(
+                children: [
+                  CreateTodoTimeView(
+                    title: '开始时间：',
+                    content: startTime != null
+                        ? _dateTimeToString(startTime)
+                        : '请选择',
+                    clearState: startTime != null,
+                    isPrefButtonSelected: startTimeNow,
+                    onSelectedDateTime: (dateTime) {
+                      setState(() {
+                        widget.todoEntity.startTime = dateTime;
+                      });
+                    },
+                    onClearDateTime: () {
+                      setState(() {
+                        widget.todoEntity.startTime = null;
+                      });
+                    },
+                    buttonTitle: '当前',
+                    buttonAction: () {
+                      setState(() {
+                        widget.todoEntity.startTime = DateTime.now();
+                      });
+                    },
+                    buttonLongAction: () async {
+                      await _preferences!
+                          .setBool(todoStartTimeNow, !startTimeNow);
+                      if (startTimeNow) {
+                        TDToast.showText('取消默认开始时间为当前', context: context);
+                      } else {
+                        TDToast.showText('设置默认开始时间为当前', context: context);
+                      }
 
-                        setState(() {
-                          widget.todoEntity.startTime = DateTime.now();
-                        });
-                      },
-                    ),
-                    CreateTodoTimeView(
-                      title: '结束时间',
-                      content:
-                          endTime != null ? _dateTimeToString(endTime) : '请选择',
-                      clearState: endTime != null,
-                      isPrefButtonSelected: endTimeToday,
-                      onSelectedDateTime: (dateTime) {
-                        setState(() {
-                          widget.todoEntity.endTime = dateTime;
-                        });
-                      },
-                      onClearDateTime: () {
-                        setState(() {
-                          widget.todoEntity.endTime = null;
-                        });
-                      },
-                      buttonTitle: '今日',
-                      buttonAction: () {
-                        setState(() {
-                          final now = DateTime.now();
-                          widget.todoEntity.endTime =
-                              DateTime(now.year, now.month, now.day, 23, 59);
-                        });
-                      },
-                      buttonLongAction: () async {
-                        await _preferences!
-                            .setBool(todoEndTimeToday, !endTimeToday);
-                        if (endTimeToday) {
-                          TDToast.showText('取消默认结束时间为今日', context: context);
-                        } else {
-                          TDToast.showText('设置默认结束时间为今日', context: context);
-                        }
-                        setState(() {
-                          final now = DateTime.now();
-                          widget.todoEntity.endTime =
-                              DateTime(now.year, now.month, now.day, 23, 59);
-                        });
-                      },
-                    ),
-                    CreateTodoSelectView(
-                      title: '分组',
-                      defaultValue: _selectedGroup,
-                      dataSource: groupList,
-                      onSelectedCallback: (group) {
-                        setState(() {
-                          _selectedGroup = group;
-                        });
-                      },
-                    ),
-                    CreateTodoTagView(
-                      selectedTags: widget.todoEntity.tags,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return TodoTagSelectPage(
-                              selectedTags: widget.todoEntity.tags,
-                              onSelectedTags: (tags) {
-                                setState(() {
-                                  widget.todoEntity.tags = tags;
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
+                      setState(() {
+                        widget.todoEntity.startTime = DateTime.now();
+                      });
+                    },
+                  ),
+                  CreateTodoTimeView(
+                    title: '结束时间：',
+                    content:
+                        endTime != null ? _dateTimeToString(endTime) : '请选择',
+                    clearState: endTime != null,
+                    isPrefButtonSelected: endTimeToday,
+                    onSelectedDateTime: (dateTime) {
+                      setState(() {
+                        widget.todoEntity.endTime = dateTime;
+                      });
+                    },
+                    onClearDateTime: () {
+                      setState(() {
+                        widget.todoEntity.endTime = null;
+                      });
+                    },
+                    buttonTitle: '今日',
+                    buttonAction: () {
+                      setState(() {
+                        final now = DateTime.now();
+                        widget.todoEntity.endTime =
+                            DateTime(now.year, now.month, now.day, 23, 59);
+                      });
+                    },
+                    buttonLongAction: () async {
+                      await _preferences!
+                          .setBool(todoEndTimeToday, !endTimeToday);
+                      if (endTimeToday) {
+                        TDToast.showText('取消默认结束时间为今日', context: context);
+                      } else {
+                        TDToast.showText('设置默认结束时间为今日', context: context);
+                      }
+                      setState(() {
+                        final now = DateTime.now();
+                        widget.todoEntity.endTime =
+                            DateTime(now.year, now.month, now.day, 23, 59);
+                      });
+                    },
+                  ),
+                  CreateTodoSelectView(
+                    title: '分组：',
+                    defaultValue: _selectedGroup,
+                    dataSource: groupList,
+                    onSelectedCallback: (group) {
+                      setState(() {
+                        _selectedGroup = group;
+                      });
+                    },
+                  ),
+                  CreateTodoTagView(
+                    selectedTags: widget.todoEntity.tags,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return TodoTagSelectPage(
+                            selectedTags: widget.todoEntity.tags,
+                            onSelectedTags: (tags) {
+                              setState(() {
+                                widget.todoEntity.tags = tags;
+                              });
+                            },
+                          );
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -262,7 +255,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   }
 
   String _dateTimeToString(DateTime dateTime) {
-    return "${"${dateTime.year}".padLeft(4, '0')}/${"${dateTime.month}".padLeft(2, '0')}/${"${dateTime.day}".padLeft(2, '0')} ${"${dateTime.hour}".padLeft(2, '0')}:${"${dateTime.minute}".padLeft(2, '0')}";
+    return "${"${dateTime.year - 2000}".padLeft(2, '0')}/${"${dateTime.month}".padLeft(2, '0')}/${"${dateTime.day}".padLeft(2, '0')}  ${"${dateTime.hour}".padLeft(2, '0')}:${"${dateTime.minute}".padLeft(2, '0')}";
   }
 
   //  处理保存

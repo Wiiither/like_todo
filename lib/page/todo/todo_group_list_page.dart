@@ -7,14 +7,14 @@ import 'package:like_todo/page/todo/todo_list_page.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-class TodoContentPage extends StatefulWidget {
-  const TodoContentPage({super.key});
+class TodoGroupListPage extends StatefulWidget {
+  const TodoGroupListPage({super.key});
 
   @override
-  State<TodoContentPage> createState() => _TodoContentPageState();
+  State<TodoGroupListPage> createState() => _TodoGroupListPageState();
 }
 
-class _TodoContentPageState extends State<TodoContentPage>
+class _TodoGroupListPageState extends State<TodoGroupListPage>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
@@ -31,29 +31,24 @@ class _TodoContentPageState extends State<TodoContentPage>
 
       return Column(
         children: [
-          Stack(
-            children: [
-              TDTabBar(
-                isScrollable: true,
-                controller: _tabController,
-                backgroundColor: Colors.white,
-                labelPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                labelStyle: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w600,
-                  color: CustomColor.mainColor,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 30,
-                  color: Colors.grey,
-                ),
-                tabs: groups.map((group) {
-                  return _buildTab(text: group.groupName);
-                }).toList(),
-              ).padding(horizontal: 20),
-            ],
-          ),
+          TDTabBar(
+            isScrollable: true,
+            controller: _tabController,
+            backgroundColor: Colors.white,
+            labelPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: CustomColor.mainColor,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+            tabs: groups.map((group) {
+              return _buildTab(text: group.groupName);
+            }).toList(),
+          ).padding(horizontal: 20),
           Expanded(
             child: TDTabBarView(
               controller: _tabController,

@@ -55,7 +55,11 @@ class CreateTodoTimeView extends StatelessWidget {
             const Spacer(),
             Text(
               content,
-              style: const TextStyle(fontSize: 15, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: CustomColor.tertiaryColor,
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -69,7 +73,7 @@ class CreateTodoTimeView extends StatelessWidget {
                 clearState
                     ? TDIcons.close_circle_filled
                     : TDIcons.chevron_right,
-                color: Colors.grey,
+                color: CustomColor.secondaryGray,
                 size: clearState ? 17 : 22,
               ),
             ).padding(right: 10, left: 10),

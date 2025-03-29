@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
 import 'package:like_todo/base/time_utils.dart';
+import 'package:like_todo/bloc/tag/tag_bloc.dart';
 import 'package:like_todo/bloc/todo/todo_bloc.dart';
 import 'package:like_todo/component/me/me_statistic_item_view.dart';
 import 'package:like_todo/entity/todo_entity.dart';
@@ -10,6 +11,7 @@ import 'package:like_todo/page/me/achievement_page.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../component/me/me_item_view.dart';
+import '../tag/tag_manager_page.dart';
 
 class MePage extends StatelessWidget {
   const MePage({
@@ -37,7 +39,21 @@ class MePage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (buildContext) => BlocProvider.value(
                       value: context.read<TodoBloc>(),
-                      child: GroupManagerPage(),
+                      child: const GroupManagerPage(),
+                    ),
+                  ),
+                );
+              },
+            ),
+            MeItemView(
+              title: '标签管理',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (buildContext) => BlocProvider.value(
+                      value: context.read<TagBloc>(),
+                      child: const TagManagerPage(),
                     ),
                   ),
                 );

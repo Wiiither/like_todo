@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:like_todo/base/achievement_key_constant.dart';
 import 'package:like_todo/entity/achieve_entity.dart';
 import 'package:like_todo/entity/todo_entity.dart';
@@ -10,6 +11,8 @@ class AchieveManager {
     return _instance;
   }
 
+  BuildContext? buildContext;
+
   AchieveManager._internal();
 
   List<TodoEntity> todoList = [];
@@ -17,6 +20,10 @@ class AchieveManager {
   SharedPreferences? preferences;
 
   bool isAnyHiddenAchieved = false;
+
+  void loadContext(BuildContext context) {
+    buildContext = context;
+  }
 
   void loadAchievement(List<TodoEntity> todoList) async {
     this.todoList = todoList;

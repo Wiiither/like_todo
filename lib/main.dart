@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
+import 'package:like_todo/bloc/tag/tag_bloc.dart';
 import 'package:like_todo/bloc/todo/todo_bloc.dart';
 import 'package:like_todo/page/main_page.dart';
 
@@ -34,8 +35,11 @@ class MyApp extends StatelessWidget {
                 ..add(GetAllGroupTodoEvent())
                 ..add(ReloadAllTodoEvent()),
             ),
+            BlocProvider(
+              create: (context) => TagBloc()..add(LoadDefaultTagEvent()),
+            ),
           ],
-          child: MainPage(),
+          child: const MainPage(),
         ));
   }
 }

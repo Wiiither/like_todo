@@ -36,7 +36,11 @@ class _MainPageState extends State<MainPage>
     return Scaffold(
       body: TDTabBarView(
         controller: _tabController,
-        children: const [TodoPage(), CalendarPage(), MePage()],
+        children: const [
+          TodoPage(),
+          CalendarPage(),
+          MePage(),
+        ],
       ),
       bottomNavigationBar: MainTabBar(
         tabController: _tabController,

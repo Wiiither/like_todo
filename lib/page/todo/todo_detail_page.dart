@@ -95,7 +95,11 @@ class TodoDetailPage extends StatelessWidget {
               title: '类别：',
               body: categoryTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
-                  : TodoTagItemView(entity: categoryTags[0], isSelected: false),
+                  : TodoTagItemView(
+                      entity: categoryTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           Visibility(
@@ -105,7 +109,10 @@ class TodoDetailPage extends StatelessWidget {
               body: complexityTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
                   : TodoTagItemView(
-                      entity: complexityTags[0], isSelected: false),
+                      entity: complexityTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           Visibility(
@@ -114,7 +121,11 @@ class TodoDetailPage extends StatelessWidget {
               title: '紧急程度：',
               body: urgencyTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
-                  : TodoTagItemView(entity: urgencyTags[0], isSelected: false),
+                  : TodoTagItemView(
+                      entity: urgencyTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           Visibility(
@@ -124,7 +135,10 @@ class TodoDetailPage extends StatelessWidget {
               body: importanceTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
                   : TodoTagItemView(
-                      entity: importanceTags[0], isSelected: false),
+                      entity: importanceTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           Visibility(
@@ -134,7 +148,10 @@ class TodoDetailPage extends StatelessWidget {
               body: completionTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
                   : TodoTagItemView(
-                      entity: completionTags[0], isSelected: false),
+                      entity: completionTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           Visibility(
@@ -144,7 +161,10 @@ class TodoDetailPage extends StatelessWidget {
               body: completionTags.isEmpty
                   ? Text('无', style: _baseTextStyle())
                   : TodoTagItemView(
-                      entity: completionTags[0], isSelected: false),
+                      entity: completionTags[0],
+                      isSelected: false,
+                      canClose: false,
+                    ),
             ),
           ),
           const SizedBox(height: 20),

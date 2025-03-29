@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:like_todo/base/constant_value.dart';
+import 'package:like_todo/base/no_state_view.dart';
 import 'package:like_todo/base/time_utils.dart';
 import 'package:like_todo/component/todo/todo_item_view.dart';
 import 'package:like_todo/entity/todo_entity.dart';
 import 'package:like_todo/entity/todo_group_entity.dart';
 
-import '../../base/svg_util.dart';
 import '../../bloc/todo/todo_bloc.dart';
 
 class TodoListPage extends StatelessWidget {
@@ -45,9 +44,15 @@ class TodoListPage extends StatelessWidget {
     }
 
     return todoList.isEmpty
-        ? SvgAssets.loadSvg(no_todo_svg)
+        ? const NoStateView(
+            type: NoStateType.addSchedule,
+            title: '今天还没有添加 ToDo 哦',
+          )
         : isAllComplete
-            ? SvgAssets.loadSvg(all_complete_svg)
+            ? const NoStateView(
+                type: NoStateType.allComplete,
+                title: '你完成今天所有的 ToDo 啦，好好休息吧',
+              )
             : ListView.builder(
                 itemCount: todoList.length,
                 itemBuilder: (context, index) {

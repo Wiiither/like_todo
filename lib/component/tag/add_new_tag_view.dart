@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
-import 'package:like_todo/bloc/todo/todo_bloc.dart';
-import 'package:like_todo/entity/todo_group_entity.dart';
+import 'package:like_todo/bloc/tag/tag_bloc.dart';
+import 'package:like_todo/entity/todo_tag_entity.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-class AddNewGroupView extends StatelessWidget {
-  AddNewGroupView({super.key, this.todoGroupEntity}) {
-    if (todoGroupEntity != null) {
-      _textEditingController.text = todoGroupEntity!.groupName;
-    }
-  }
+class AddNewTagView extends StatelessWidget {
+  AddNewTagView({super.key, required this.type});
 
-  final TodoGroupEntity? todoGroupEntity;
-
+  final TodoTagEntityType type;
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -29,9 +24,9 @@ class AddNewGroupView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              todoGroupEntity == null ? '新增分组' : '编辑分组',
-              style: const TextStyle(
+            const Text(
+              '新增标签',
+              style: TextStyle(
                 color: CustomColor.mainColor,
                 decoration: TextDecoration.none,
                 fontSize: 17,
@@ -43,7 +38,7 @@ class AddNewGroupView extends StatelessWidget {
               controller: _textEditingController,
               cursorColor: CustomColor.mainColor,
               inputDecoration: const InputDecoration(
-                hintText: '请输入分组名称',
+                hintText: '请输入标签名称',
               ),
             ),
             const SizedBox(height: 10),
@@ -51,9 +46,8 @@ class AddNewGroupView extends StatelessWidget {
               width: double.infinity,
               child: TDButton(
                 onTap: () {
-                  final groupName = _textEditingController.text;
-                  if (_handleCreateGroup(
-                      context: context, groupName: groupName)) {
+                  final tagName = _textEditingController.text;
+                  if (_handleCreateTag(context: context, tagName: tagName)) {
                     Navigator.pop(context);
                   }
                 },
@@ -71,28 +65,22 @@ class AddNewGroupView extends StatelessWidget {
     );
   }
 
-  bool _handleCreateGroup(
-      {required BuildContext context, required String groupName}) {
-    if (groupName.isEmpty) {
-      TDToast.showText('分组名称不能为空', context: context);
+  bool _handleCreateTag(
+      {required BuildContext context, required String tagName}) {
+    if (tagName.isEmpty) {
+      TDToast.showText('标签名称不能为空', context: context);
       return false;
     }
-    final bloc = context.read<TodoBloc>();
-    if (todoGroupEntity == null) {
-      TodoGroupEntity groupEntity =
-          TodoGroupEntity(groupID: _generateGroupID(), groupName: groupName);
-
-      bloc.add(AddGroupEvent(groupEntity: groupEntity));
-    } else {
-      TodoGroupEntity groupEntity =
-          todoGroupEntity!.copyWith(groupName: groupName);
-      bloc.add(EditGroupEvent(todoGroupEntity: groupEntity));
+    final bloc = context.read<TagBloc>();
+    final tagList = bloc.state.todoTagList;
+    TodoTagEntity todoTagEntity = TodoTagEntity(name: tagName, type: type);
+    final containSameTag = tagList.any((item) => item == todoTagEntity);
+    if (containSameTag) {
+      TDToast.showText('该类型存在相同名称的Tag，请重命名', context: context);
+      return false;
     }
-    return true;
-  }
 
-  String _generateGroupID() {
-    final DateTime now = DateTime.now();
-    return "${now.millisecondsSinceEpoch}";
+    bloc.add(AddNewTagEvent(todoTag: todoTagEntity));
+    return true;
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
-import 'package:like_todo/page/todo/todo_content_page.dart';
+import 'package:like_todo/page/todo/todo_group_list_page.dart';
+import 'package:like_todo/page/todo/todo_tag_list_page.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../bloc/todo/todo_bloc.dart';
@@ -9,15 +10,33 @@ import '../../component/todo/todo_header.dart';
 import '../../entity/todo_entity.dart';
 import 'create_todo_page.dart';
 
-class TodoPage extends StatelessWidget {
+class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
+
+  @override
+  State<TodoPage> createState() => _TodoPageState();
+}
+
+class _TodoPageState extends State<TodoPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TodoHeader(),
+      appBar: TodoHeader(
+        tabController: _tabController,
+      ),
       backgroundColor: Colors.white,
-      body: const TodoContentPage(),
+      body: TabBarView(
+          controller: _tabController,
+          children: const [TodoGroupListPage(), TodoTagListPage()]),
       floatingActionButton: TDButton(
         width: 48,
         height: 48,

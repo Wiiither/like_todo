@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_todo/base/custom_color.dart';
+import 'package:like_todo/component/todo/todo_tag_item_view.dart';
 import 'package:like_todo/entity/todo_entity.dart';
 import 'package:like_todo/page/todo/todo_detail_page.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -22,60 +23,73 @@ class TodoItemView extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         decoration: BoxDecoration(
-            color: CustomColor.backgroundColor,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: const [
-              BoxShadow(
-                color: CustomColor.shadowColor,
-                spreadRadius: 0,
-                blurRadius: 4,
-                offset: Offset(0, 1),
-              )
-            ]),
+          color: CustomColor.backgroundColor,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            width: 1.0,
+            color: CustomColor.quaternaryColor,
+          ),
+        ),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  todoEntity.title,
-                  style: TextStyle(
-                    color: todoEntity.isCompleted
-                        ? CustomColor.mainColor.withOpacity(0.2)
-                        : CustomColor.mainColor,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //  标题
+                  Text(
+                    todoEntity.title,
+                    style: TextStyle(
+                      color: todoEntity.isCompleted
+                          ? CustomColor.mainColor.withOpacity(0.2)
+                          : CustomColor.mainColor,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Visibility(
-                  visible: todoEntity.mark.isNotEmpty,
-                  child: Text(
-                    '备注：${todoEntity.mark}',
-                    style: TextStyle(
-                      color: todoEntity.isCompleted
-                          ? CustomColor.mainColor.withOpacity(0.2)
-                          : CustomColor.mainColor.withOpacity(0.7),
-                      fontSize: 14,
+                  //  备注
+                  Visibility(
+                    visible: todoEntity.mark.isNotEmpty,
+                    child: Text(
+                      todoEntity.mark,
+                      style: TextStyle(
+                        color: todoEntity.isCompleted
+                            ? CustomColor.invalidColor
+                            : CustomColor.secondaryColor,
+                        fontSize: 13,
+                      ),
                     ),
-                  ).padding(top: 4),
-                ),
-                Visibility(
-                  visible: todoEntity.startTime != null,
-                  child: Text(
-                    '开始时间：${_startTimeString(todoEntity.startTime ?? DateTime.now())}',
-                    style: TextStyle(
-                      color: todoEntity.isCompleted
-                          ? CustomColor.mainColor.withOpacity(0.2)
-                          : CustomColor.mainColor.withOpacity(0.7),
-                      fontSize: 14,
-                    ),
-                  ).padding(top: 4),
-                )
-              ],
+                  ),
+                  Visibility(
+                    visible: todoEntity.tags.isNotEmpty,
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: todoEntity.tags
+                          .map((item) => TodoTagItemView(
+                              entity: item, isSelected: true, canClose: false))
+                          .toList(),
+                    ).padding(top: 8),
+                  ),
+                  const SizedBox(height: 10),
+                  Visibility(
+                    visible: todoEntity.startTime != null,
+                    child: Text(
+                      _startTimeString(todoEntity.startTime ?? DateTime.now()),
+                      style: TextStyle(
+                          color: todoEntity.isCompleted
+                              ? CustomColor.invalidColor
+                              : CustomColor.secondaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600),
+                    ).padding(top: 4),
+                  )
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 20),
             GestureDetector(
               onTap: () {
                 _changeTodoState(context);

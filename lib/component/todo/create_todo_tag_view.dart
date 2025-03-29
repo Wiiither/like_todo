@@ -30,7 +30,7 @@ class CreateTodoTagView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '标签',
+              '标签：',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -42,8 +42,11 @@ class CreateTodoTagView extends StatelessWidget {
               runSpacing: 4,
               children: selectedTags
                   .map(
-                    (TodoTagEntity entity) =>
-                        TodoTagItemView(entity: entity, isSelected: false),
+                    (TodoTagEntity entity) => TodoTagItemView(
+                      entity: entity,
+                      isSelected: false,
+                      canClose: false,
+                    ),
                   )
                   .toList(),
             )

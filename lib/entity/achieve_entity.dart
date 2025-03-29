@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 enum AchievementType {
   taskComplete, // 完成任务相关
   taskStreak, // 连续完成相关
@@ -29,7 +31,7 @@ class AchievementCheckResult {
 
   const AchievementCheckResult({
     required this.nowProgress,
-    this.achieveTime = null,
+    this.achieveTime,
   });
 }
 
@@ -43,15 +45,18 @@ class AchievementEntity {
   final int maxProgress;
   final String icon;
   final DateTime? achieveTime;
+  final VoidCallback? achieveCondition;
 
-  AchievementEntity(
-      {required this.id,
-      required this.title,
-      required this.description,
-      required this.achieveProverb,
-      required this.type,
-      required this.nowProgress,
-      required this.maxProgress,
-      required this.icon,
-      this.achieveTime});
+  AchievementEntity({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.achieveProverb,
+    required this.type,
+    required this.nowProgress,
+    required this.maxProgress,
+    required this.icon,
+    this.achieveTime,
+    this.achieveCondition,
+  });
 }

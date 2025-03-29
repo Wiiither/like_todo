@@ -11,6 +11,8 @@ enum TodoTagEntityType {
   importance,
   //  达成效果
   completion,
+  //  自定义
+  custom
 }
 
 class TodoTagEntity {
@@ -67,8 +69,6 @@ List<TodoTagEntity> defaultTodoTags = [
   TodoTagEntity(name: '简单', type: TodoTagEntityType.complexity),
   TodoTagEntity(name: '中等', type: TodoTagEntityType.complexity),
   TodoTagEntity(name: '复杂', type: TodoTagEntityType.complexity),
-  TodoTagEntity(name: '高度复杂', type: TodoTagEntityType.complexity),
-  TodoTagEntity(name: '不确定', type: TodoTagEntityType.complexity),
   //  紧急程度
   TodoTagEntity(name: '低优先级', type: TodoTagEntityType.urgency),
   TodoTagEntity(name: '中优先级', type: TodoTagEntityType.urgency),
@@ -89,15 +89,17 @@ extension TodoTagEntityTypeExtension on TodoTagEntityType {
   Color typeColor() {
     switch (this) {
       case TodoTagEntityType.category:
-        return const Color(0xff079992);
+        return const Color(0xff119822);
       case TodoTagEntityType.complexity:
-        return const Color(0xffF3A683);
+        return const Color(0xffF49D38);
       case TodoTagEntityType.urgency:
-        return const Color(0xffFC5C65);
+        return const Color(0xffD72638);
       case TodoTagEntityType.importance:
-        return const Color(0xff4B7BEC);
+        return const Color(0xff78C0E0);
       case TodoTagEntityType.completion:
-        return const Color(0xff778BEB);
+        return const Color(0xff3943B7);
+      case TodoTagEntityType.custom:
+        return const Color(0xffDBE4EE);
     }
   }
 
@@ -113,6 +115,8 @@ extension TodoTagEntityTypeExtension on TodoTagEntityType {
         return "重要程度";
       case TodoTagEntityType.completion:
         return "达到效果";
+      case TodoTagEntityType.custom:
+        return "自定义";
     }
   }
 }
